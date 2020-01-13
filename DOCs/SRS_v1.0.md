@@ -55,7 +55,7 @@
 최근, 로봇과
 관련된 업계에서 '배달 로봇(Delivery Robot)이 화두로 떠오르고 있다.
 아마존, 배달의 민족 등 실제 현업에서 배달 로봇을 사용하고 있다.
-조사[^1]에 따르면 서비스 로봇의 시장 규모는 2018년 112억 달러에서 2023년
+[조사1]에 따르면 서비스 로봇의 시장 규모는 2018년 112억 달러에서 2023년
 297억 달러로 연평균 21.44% 성장할 것으로 예상됐다.
 
 ![그림 1. 시도별 전국 의료 인력](https://github.com/Aibia/NGV_MobilityProject/blob/master/img/%EC%8B%9C%EB%8F%84%EB%B3%84%20%EC%A0%84%EA%B5%AD%20%EC%9D%98%EB%A3%8C%20%EC%9D%B8%EB%A0%A5.jpg?raw=true)
@@ -356,6 +356,6 @@
 
 -   라즈베리파이와 오디오킷사이의 통신과 관련한 문제
 
-[^1]: https://www.researchandmarkets.com/research/qfbt9n/top\_robotics?w=12
+[조사1]: https://www.researchandmarkets.com/research/qfbt9n/top\_robotics?w=12
 
 <br>
