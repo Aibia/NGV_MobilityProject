@@ -4,7 +4,7 @@ import cv2
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 OPEN_CV_DIR_PATH = os.path.join(CURRENT_DIR_PATH, "opencv-data")
 HAAR_CASCADE_DIR_PATH = os.path.join(OPEN_CV_DIR_PATH, "haarcascades")
-FACE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_frontalcatface.xml") 
+FACE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_frontalcatface.xml")
 EYE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "")
 
 	
