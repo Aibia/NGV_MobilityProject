@@ -5,12 +5,11 @@ CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 OPEN_CV_DIR_PATH = os.path.join(CURRENT_DIR_PATH, "opencv-data")
 HAAR_CASCADE_DIR_PATH = os.path.join(OPEN_CV_DIR_PATH, "haarcascades")
 FACE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_frontalcatface.xml")
-EYE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "")
+EYE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_eye.xml")
 
 	
 def find_face():
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    #eye_cascade = cv2.CascadeClassifier(EYE_CASCADE_XML_PATH)
     cap = cv2.VideoCapture(0)
    
     while True:
@@ -29,7 +28,6 @@ def find_face():
 
 def find_gray_face():
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    #eye_cascade = cv2.CascadeClassifier(EYE_CASCADE_XML_PATH)
     cap = cv2.VideoCapture(0)
    
     while True:
