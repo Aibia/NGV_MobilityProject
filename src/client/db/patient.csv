@@ -1,0 +1,3 @@
+id,name,drug1,drug2,drug3
+0,John,True,True,True
+1,Stacy,False,True,False
