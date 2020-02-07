@@ -24,6 +24,8 @@ def gpio_pin_change(pin_num, pin_opt):
 def medicine_out(medicine_info): 
     try:
         for motor_pin_num in medicine_info.keys():
+            if motor_pin_num == "id":
+                continue
             sm.medicine_out(motor_pin_num, medicine_info[motor_pin_num])           
     except Exception as e:
         return False 
