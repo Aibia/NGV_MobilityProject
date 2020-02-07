@@ -2,6 +2,7 @@ import requests
 import json
 
 PORT = 4000
+SERVER_PIN_NUM=17
 
 def gpio_pin_change_out(server_ip):
     url = "http://"+server_ip+":"+PORT+"/jsonrpc"
@@ -9,7 +10,7 @@ def gpio_pin_change_out(server_ip):
     # Example echo method
     payload = {
         "method": "gpio_pin_change",
-        "params": ["17", "OUT"],
+        "params": [SERVER_PIN_NUM, "OUT"],
         "jsonrpc": "2.0",
         "id": 0,
     }
@@ -21,18 +22,18 @@ def gpio_pin_change_in(server_ip):
     # Example echo method
     payload = {
         "method": "gpio_pin_change",
-        "params": ["17", "IN"],
+        "params": [SERVER_PIN_NUM, "IN"],
         "jsonrpc": "2.0",
         "id": 0,
     }
     return requests.post(url, json=payload).json()
 
-def medicine_out(server_ip, motor_info):
+def medicine_out(server_ip, medicine_info):
     url = "http://"+server_ip+":"+PORT+"/jsonrpc"
     
     payload = {
         "method" : "medicine_out",
-        "params" : [motor_info],
+        "params" : [medicine_info],
         "jsonrpc" : "2.0",
         "id" : 0,
     }
