@@ -9,6 +9,7 @@ YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d')
 LATEST_YML_PATH = utils.get_latest_yml_path()
 
+
 def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY))):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     if os.path.exists(recognizer_path):

@@ -1,4 +1,4 @@
-
+import threading
 
 def main():
     # 환자 시간 갖고 오기 

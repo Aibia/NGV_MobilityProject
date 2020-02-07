@@ -15,14 +15,8 @@ def reshape(array, width):
 def get_latest_yml_path():
     dates = os.listdir(YML_DIR_PATH)
     dates.sort()
-    return os.path.join(YML_DIR_PATH, dates[-1])
+    return os.path.join(YML_DIR_PATH, "{}.yml".format(dates[-1]))
 
-
-def get_patient_faces(num_face=30):
-    faces = []
-    for _ in range(num_face):
-        faces.append(cascade.find_gray_face()) 
-    return np.asarray(faces)
 
 
 
