@@ -2,16 +2,17 @@ from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 from jsonrpc import JSONRPCResponseManager, dispatcher
 from servomotor import servomotor as sm
-import RPi.GPIO as gpio
+import RPi.GPIO as GPIO 
 
 
 @dispatcher.add_method
 def gpio_pin_change(pin_num, pin_opt): 
     try:
+        GPIO.setmode(GPIO.BOARD)
         if pin_opt == "OUT":
-            gpio.setup(int(pin_num), gpio.OUT)
+            GPIO.setup(int(pin_num), GPIO.OUT)
         elif pin_opt == "IN":
-            gpio.setup(int(pin_num), gpio.IN)
+            GPIO.setup(int(pin_num), GPIO.IN)
         else:
             return False
     except Exception as e:
