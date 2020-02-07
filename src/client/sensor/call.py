@@ -27,11 +27,11 @@ def gpio_pin_change_in(server_ip):
     }
     return requests.post(url, json=payload).json()
 
-def move_servo_motor(server_ip, motor_info):
+def medicine_out(server_ip, motor_info):
     url = "http://"+server_ip+":"+PORT+"/jsonrpc"
     
     payload = {
-        "method" : "move_servo_motor",
+        "method" : "medicine_out",
         "params" : [motor_info],
         "jsonrpc" : "2.0",
         "id" : 0,

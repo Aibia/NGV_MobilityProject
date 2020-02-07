@@ -16,7 +16,7 @@ def main():
         patient_info = database.get_patient_info(patient_id)
         tts.say("Hello {}".format(patient_info["name"]))
         # 약 배출 
-        call.move_servo_motor(SERVER_IP_ADDR, patient_info)
+        call.medicine_out(SERVER_IP_ADDR, patient_info["medicine"])
         call.gpio_pin_change_in(SERVER_IP_ADDR)
 
 
