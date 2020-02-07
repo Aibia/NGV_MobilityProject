@@ -12,8 +12,9 @@ def medicine_out(motor_name, times):
         return False
     
     gpio.setwarnings(False)
+    # pin의 호출 방식 
+    gpio.setmode(gpio.BOARD)
     gpio.setup(motor_pin_info[motor_name], gpio.OUT)
-    gpio.setmode(gpio.BCM)
 
     p=gpio.PWM(motor_pin_info[motor_name],50)
     p.start(0)
@@ -22,4 +23,5 @@ def medicine_out(motor_name, times):
 
     p.ChangeDutyCycle(2.5)
     time.sleep(2) 
+    gpio.cleanup()
     return True 

@@ -179,10 +179,15 @@ while True:
     ## MEMO
     ## 무한 반복해서 주행하는 것인가? 
     ## 쉬는 시간은 없는 건가 
-    ret, frame = video.read()
-    # frame = cv2.flip(frame, -1)
     ## TODO 
     ## 핀 17 번의 상태를 확인하고 멈춰야 함 
+    # GPIO.setmode(GPIO.BOARD)
+    # opt = GPIO.gpio_function(17)
+    # opt would be GPIO.IN or GPIO.OUT
+    # =====================
+    ret, frame = video.read()
+    # frame = cv2.flip(frame, -1)
+    
     cv2.imshow("original", frame)
     edges = detect_edges(frame)
     roi = region_of_interest(edges)
