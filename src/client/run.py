@@ -1,8 +1,8 @@
-from vision import recognizer
-from voice import tts, stt
-from sensor import servomotor, request
-from db import database
-import config
+from client.vision import recognizer
+from client.voice import tts, stt
+from client.sensor import servomotor, request
+from client.db import database
+from client import logger, config
 
 SERVER_IP_ADDR = config.SERVER_IP_ADDR
 

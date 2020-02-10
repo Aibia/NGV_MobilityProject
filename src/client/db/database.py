@@ -1,6 +1,6 @@
 import csv
-from client.voice import tts, stt
 import time
+from client.voice import tts, stt
 from client import config
 
 PATIENT_INFO_CSV_PATH = config.PATIENT_INFO_CSV_PATH

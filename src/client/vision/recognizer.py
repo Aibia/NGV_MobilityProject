@@ -1,7 +1,7 @@
 import os
 import cv2
 from datetime import datetime
-import utils
+from client.vision import utils
 from cascade import haar
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))

@@ -4,7 +4,6 @@ from jsonrpc import JSONRPCResponseManager, dispatcher
 import RPi.GPIO as GPIO
 from server import config
 
-
 @dispatcher.add_method
 def gpio_pin_change(pin_num, pin_opt):
     try:
