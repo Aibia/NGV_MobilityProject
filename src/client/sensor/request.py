@@ -2,9 +2,11 @@ import requests
 import json
 from client import config
 
+
 SERVER_IP_ADDR = config.SERVER_IP_ADDR
 SERVER_PORT = config.SERVER_PORT
 MOTOR_STOP_PIN_NUM = config.MOTOR_STOP_PIN_NUM
+
 
 def gpio_pin_change_out():
     url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
@@ -17,6 +19,7 @@ def gpio_pin_change_out():
         "id": 0,
     }
     return requests.post(url, json=payload).json()
+
 
 def gpio_pin_change_in():
     url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"

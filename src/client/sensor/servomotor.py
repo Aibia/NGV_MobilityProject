@@ -2,8 +2,10 @@ from aiy.pins import PIN_A, PIN_B, PIN_C
 from gpiozero import AngularServo
 from client import config
 
+
 SERVO_MIN_ANGLE = config.SERVO_MIN_ANGLE
 SERVO_MAX_ANGLE = config.SERVO_MAX_ANGLE
+
 
 motor_pin_info = {
      #motor_name : motor_pin_num
@@ -11,6 +13,7 @@ motor_pin_info = {
      "medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
      "medicine3" : AngularServo(PIN_C, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
 }
+
 
 def medicine_out(medicine_info):
     try:
@@ -22,6 +25,7 @@ def medicine_out(medicine_info):
         return False 
     else:
         return True 
+
 
 def control_servo_motor(motor_name, times):
     if motor_name not in motor_pin_info.keys():

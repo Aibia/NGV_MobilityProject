@@ -21,7 +21,6 @@ def gpio_pin_change(pin_num, pin_opt):
         return True
 
 
-
 @Request.application
 def application(request):
     # Dispatcher is dictionary {<method_name>: callable}
