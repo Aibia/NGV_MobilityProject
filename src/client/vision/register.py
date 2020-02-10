@@ -3,12 +3,14 @@ from datetime import datetime
 from ..db import database
 from ..vision import utils
 from ..vision.cascade import haar
+from .. import config
 
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 TEMP_DIR_PATH = os.path.join(CURRENT_DIR_PATH, "temp")
 YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d') 
+TAKE_PIC_TIMES = config.TAKE_PIC_TIMES
 
 def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), OLD_RECOGNIZER=True):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -23,7 +25,6 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
     return database.save_new_patient(datasets["ids"][0])
 
 def register_patient():
-    TAKE_PIC_TIMES = 10
     datasets = {
         "faces" : [],
         "ids" : [util.create_new_id()] * TAKE_PIC_TIMES

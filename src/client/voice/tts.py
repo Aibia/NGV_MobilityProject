@@ -14,5 +14,5 @@ def say(text):
 
 def say_korean(text):
     cmd = "espeak -v ko {}".format(text)
-    subprocess.check_call(cmd, shell=True)
+    return subprocess.check_call(cmd, shell=True)
 

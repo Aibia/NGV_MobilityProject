@@ -4,8 +4,9 @@ import random
 import numpy as np
 from datetime import date
 from ..db import database
+from .. import config
 
-ID_LENGTH = 10
+ID_LENGTH = config.ID_LENGTH
 STRING_POOL = string.ascii_lowercase
 random.seed(0)
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
