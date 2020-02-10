@@ -1,8 +1,9 @@
 from aiy.pins import PIN_A, PIN_B, PIN_C
 from gpiozero import AngularServo
+from client import config
 
-SERVO_MIN_ANGLE = -90
-SERVO_MAX_ANGLE = 90
+SERVO_MIN_ANGLE = config.SERVO_MIN_ANGLE
+SERVO_MAX_ANGLE = config.SERVO_MAX_ANGLE
 
 motor_pin_info = {
      #motor_name : motor_pin_num
@@ -32,25 +33,3 @@ def control_servo_motor(motor_name, times):
     servo.min()
     time.sleep(2)
     return True
-
-
-'''
-def control_servo_motor(motor_name, times):
-    if motor_name not in motor_pin_info.keys():
-        return False
-    
-    GPIO.setwarnings(False)
-    # pin의 호출 방식 
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(motor_pin_info[motor_name], GPIO.OUT)
-
-    p=GPIO.PWM(motor_pin_info[motor_name],50)
-    p.start(0)
-    p.ChangeDutyCycle(12)
-    time.sleep(2)
-
-    p.ChangeDutyCycle(2.5)
-    time.sleep(2) 
-    GPIO.cleanup()
-    return True 
-'''

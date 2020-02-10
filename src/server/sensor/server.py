@@ -2,6 +2,7 @@ from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 from jsonrpc import JSONRPCResponseManager, dispatcher
 import RPi.GPIO as GPIO
+from server import config
 
 
 @dispatcher.add_method
@@ -30,4 +31,4 @@ def application(request):
 
 
 if __name__ == '__main__':
-    run_simple('localhost', 4000, application)
+    run_simple(config.SERVER_IP_ADDR, config.SERVER_PORT, application)

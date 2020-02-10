@@ -2,8 +2,9 @@ from vision import recognizer
 from voice import tts, stt
 from sensor import servomotor, request
 from db import database
+import config
 
-SERVER_IP_ADDR = "192.168.0.10"
+SERVER_IP_ADDR = config.SERVER_IP_ADDR
 
 def main():
     while True:
