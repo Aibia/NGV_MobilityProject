@@ -3,14 +3,21 @@ import numpy as np
 import math
 import time
 import RPi.GPIO as GPIO
+import signal
+import sys
+import Adafruit_PCA9685
 
-PIN_NUMBER = 17
+pwm = Adafruit_PCA9685.PCA9685()
+
+
+PIN_NUMBER = 15
+
 
 def detect_edges(frame):
     gray = cv2.cvtColor(frame, 6)
-    cv2.imshow("GRAY", gray)
+    # cv2.imshow("GRAY", gray)
     mask = cv2.bilateralFilter(gray, 3, 15, 15, 4)
-    cv2.imshow("mask", mask)
+    # cv2.imshow("mask", mask)
 
     # detect edges
     edges = cv2.Canny(mask, 100, 200)
@@ -34,7 +41,7 @@ def region_of_interest(edges):
     cv2.fillPoly(mask, polygon, 255)
 
     cropped_edges = cv2.bitwise_and(edges, mask)
-    cv2.imshow("roi", cropped_edges)
+    #cv2.imshow("roi", cropped_edges)
 
     return cropped_edges
 
@@ -149,55 +156,98 @@ def get_steering_angle(frame, lane_lines):
         mid = int(width / 2)
         x_offset = (left_x2 + right_x2) / 2 - mid
         y_offset = int(height / 2)
+        num_lane = 2
 
     elif len(lane_lines) == 1:
         x1, _, x2, _ = lane_lines[0][0]
         mid = int(width / 2)
         x_offset = x2 - x1
         y_offset = int(height / 2)
+        num_lane = 1
 
     elif len(lane_lines) == 0:
         x_offset = 0
         y_offset = int(height / 2)
+        num_lane = 0
 
     angle_to_mid_radian = math.atan(x_offset / y_offset)
     angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)
     steering_angle = angle_to_mid_deg + 90
 
-    return steering_angle
+    return steering_angle, num_lane
 
+def stop_forwarding(sig, frame):
+    pwm.set_pwm(motor_pin, 0 ,motor_stop)
+    print ('stopped!')
+    sys.exit(0)
 
-video = cv2.VideoCapture(1)
+signal.signal(signal.SIGINT, stop_forwarding)
+
+video = cv2.VideoCapture(0)
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
 time.sleep(1)
+
+servo_pin = 0
+motor_pin = 15
+commu_pin = 20
+
+servo_left = 270    #40
+servo_mid = 370     #90
+servo_right = 470   #140
+
+motor_stop = 380
+motor_forward = 393
+
+pwm.set_pwm_freq(60)
 
 ##fourcc = cv2.VideoWriter_fourcc(*'XVID')
 ##out = cv2.VideoWriter('Original15.avi',fourcc,10,(320,240))
 ##out2 = cv2.VideoWriter('Direction15.avi',fourcc,10,(320,240))
 
 GPIO.setmode(GPIO.BOARD)
+pwm.set_pwm(servo_pin, 0, servo_mid)
 
 while True:
     while GPIO.gpio_function(PIN_NUMBER) == GPIO.OUT:
+
         time.sleep(1)
     ret, frame = video.read()
     # frame = cv2.flip(frame, -1)
 
-    cv2.imshow("original", frame)
+    #cv2.imshow("original", frame)
     edges = detect_edges(frame)
     roi = region_of_interest(edges)
     line_segments = detect_line_segments(roi)
     lane_lines = average_slope_intercept(frame, line_segments)
     lane_lines_image = display_lines(frame, lane_lines)
-    steering_angle = get_steering_angle(frame, lane_lines)
+    steering_angle, num_lane = get_steering_angle(frame, lane_lines)
     print(steering_angle)
     heading_image = display_heading_line(lane_lines_image, steering_angle)
-    cv2.imshow("heading line", heading_image)
+    #cv2.imshow("heading line", heading_image)
 
     ##    out.write(frame)
     ##    out2.write(heading_image)
+    
+    if num_lane == 0:
+        steering_angle = before_angle
+        
+    before_angle = steering_angle
+    
+    if steering_angle > 140:
+        steering_angle = 140
+    elif steering_angle < 40:   #36
+        steering_angle = 40
+
+    pwm.set_pwm(motor_pin, 0, motor_forward)
+
+    #servo_pwm = 2 * steering_angle + 190    #1차 -> 40-140 / 270, 370
+    #servo_pwm = 2.1143 * steering_angle + 172.53 #1차 -> 36-140 / 250, 360
+    #servo_pwm = 0.0000000000000002 * steering_angle ** 2 + 2*steering_angle + 190 #2차 -> 40-140 / 270, 370
+    servo_pwm = 0.0016 * steering_angle ** 2 + 1.8396*steering_angle + 181.74   #2차 -> 36-140 / 250, 360
+
+    pwm.set_pwm(servo_pin, 0, servo_pwm)
 
     key = cv2.waitKey(1)
     if key == 27:
