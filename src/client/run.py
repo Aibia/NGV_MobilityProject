@@ -3,7 +3,7 @@ from voice import tts, stt
 from sensor import servomotor, request
 from db import database
 
-SERVER_IP_ADDR = "192.168.0.12"
+SERVER_IP_ADDR = "192.168.0.10"
 
 def main():
     while True:
