@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 import math
 import time
+import RPi.GPIO as GPIO
 
+PIN_NUMBER = 17
 
 def detect_edges(frame):
     gray = cv2.cvtColor(frame, 6)
@@ -175,19 +177,14 @@ time.sleep(1)
 ##out = cv2.VideoWriter('Original15.avi',fourcc,10,(320,240))
 ##out2 = cv2.VideoWriter('Direction15.avi',fourcc,10,(320,240))
 
+GPIO.setmode(GPIO.BOARD)
+
 while True:
-    ## MEMO
-    ## 무한 반복해서 주행하는 것인가? 
-    ## 쉬는 시간은 없는 건가 
-    ## TODO 
-    ## 핀 17 번의 상태를 확인하고 멈춰야 함 
-    # GPIO.setmode(GPIO.BOARD)
-    # opt = GPIO.gpio_function(17)
-    # opt would be GPIO.IN or GPIO.OUT
-    # =====================
+    while GPIO.gpio_function(PIN_NUMBER) == GPIO.OUT:
+        time.sleep(1)
     ret, frame = video.read()
     # frame = cv2.flip(frame, -1)
-    
+
     cv2.imshow("original", frame)
     edges = detect_edges(frame)
     roi = region_of_interest(edges)
