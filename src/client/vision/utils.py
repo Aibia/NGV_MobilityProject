@@ -10,7 +10,7 @@ STRING_POOL = string.ascii_lowercase
 random.seed(0)
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
-PATIENT_DATABASE_CSV_PATH = ""
+
 
 def reshape(array, width):
     assert len(array) % width == 0
