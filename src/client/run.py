@@ -1,14 +1,18 @@
-from client.vision import recognizer
-from client.voice import tts, stt
-from client.sensor import servomotor, request
-from client.db import database
-from client import logger, config
+from db import database
+from vision import recognizer
+from sensor import servomotor, request
+from voice import tts, stt
+from . import logger, config
 
 SERVER_IP_ADDR = config.SERVER_IP_ADDR
 
 def main():
+    
+    logger.log.info("start running client app")
+
     while True:
         # 환자 얼굴 찾기
+        logger.log.info()
         patient_id = recognizer.find_patinet()
         # 주행 멈추기 
         request.gpio_pin_change_out(SERVER_IP_ADDR)

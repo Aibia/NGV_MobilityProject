@@ -1,6 +1,6 @@
 from aiy.pins import PIN_A, PIN_B, PIN_C
 from gpiozero import AngularServo
-from client import config
+from .. import config
 
 
 SERVO_MIN_ANGLE = config.SERVO_MIN_ANGLE

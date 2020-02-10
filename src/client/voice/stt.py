@@ -1,6 +1,6 @@
 import sys
 import requests
-from  aiy.cloudspeech import CloudSpeechClient
+from aiy.cloudspeech import CloudSpeechClient
 from aiy.board import Board
 
 # clova stt

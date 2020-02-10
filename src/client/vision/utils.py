@@ -1,9 +1,9 @@
 import os
-import numpy as np
-from datetime import date
 import string
 import random
-from client.db import database
+import numpy as np
+from datetime import date
+from ..db import database
 
 ID_LENGTH = 10
 STRING_POOL = string.ascii_lowercase

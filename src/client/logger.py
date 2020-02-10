@@ -1,7 +1,7 @@
-import logging
 import os
+import logging
 from datetime import datetime
-from client import config
+from . import config
 
 LOG_DIR_PATH = config.LOG_DIR_PATH
 TODAY = datetime.now().strftime('%Y-%m-%d') 
