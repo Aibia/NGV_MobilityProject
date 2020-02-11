@@ -14,7 +14,10 @@ FACE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_frontal
 EYE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_eye.xml")
 
 	
-def find_face(GRAY=True, display=False, save=False):
+def find_face(GRAY=True, display=False):
+    ## TODO
+    ## 디스플레이 감지하면 자동으로 화면 띄우기
+    ## 화면에 탐지되고 있는 위치 표시
     try:
         display=True
         face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)

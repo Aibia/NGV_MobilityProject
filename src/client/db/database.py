@@ -41,6 +41,8 @@ def has_patient_id(patient_id):
 
 
 def save_patient_info(patient_id, patient_info):
+    ## TODO
+    ## 제대로 값이 헤더와 맞게 들어가지 않음 
     field_names = patient_info.keys()
     with open(PATIENT_INFO_CSV_PATH, 'a') as fd:
         csv_dict_fd = csv.DictWriter(fd, fieldnames=field_names)
@@ -49,6 +51,8 @@ def save_patient_info(patient_id, patient_info):
 
 
 def save_medicine_info(patient_id, medicine_info):
+    ## TODO
+    ## 제대로 값이 헤더와 맞게  들어가지 않음 
     field_names = medicine_info.keys()
     with open(MEDICINE_INFO_CSV_PATH, 'a') as fd:
         csv_dict_fd = csv.DictWriter(fd, fieldnames=field_names)
@@ -57,28 +61,40 @@ def save_medicine_info(patient_id, medicine_info):
     
     
 def save_new_patient(patient_id):
-    tts.say("Tell me what is your name?")
-    name = stt.google_stt()
+    ## TODO
+    ## 한글로 할껀지, 영어로 갈껀지, 외부 통신할껀지 정하기..
+    #tts.say("Tell me what is your name?")
+    tts.clova_tts("당신의 이름은 무엇인가요 ?")
+    #name = stt.google_stt()
+    name = stt.clova_stt()
     count = 0
     while name == "":
         if count == 10:
             tts.say('error')
             break
-        tts.say("I didn't understand")
+        #tts.say("I didn't understand")
+        tts.clova_tts("다시한번 말씀해주세요")
         time.sleep(1)
-        tts.say("What is your name?")
-        name = stt.google_stt()
+        #tts.say("What is your name?")
+        tts.clova_tts("당신의 이름은 무엇인가요 ?")
+        #name = stt.google_stt()
+        name = stt.clova_stt()
         count += 1
     count = 0
-    tts.say("what is you age?")
-    age = stt.google_stt()
+    #tts.say("what is you age?")
+    tts.clova_tts("당신의 나이는 몇살인가요 ?")
+    #age = stt.google_stt()
+    age = stt.clova_stt()
     while age == "":
         if count == 10:
             tts.say('error')
             break
-        tts.say("I didn't understand")
+        #tts.say("I didn't understand")
+        tts.clova_tts("다시한번 말씀해주세요")
         time.sleep(1)
-        tts.say("What is your age?")
-        age = stt.google_stt()
+        #tts.say("What is your age?")
+        tts.clova_tts("당신의 나이는 몇살인가요 ?")
+        #age = stt.google_stt()
+        age = stt.clova_stt()
         count += 1
     return save_patient_info(patient_id, {"id":patient_id, "name":name, "age":age}), save_medicine_info(patient_id, {"id":patient_id, "medicine1":0, "medicine2":1, "medicine3":0})

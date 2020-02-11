@@ -23,7 +23,7 @@ def get_latest_yml_path():
     dates = os.listdir(YML_DIR_PATH)
     dates.sort()
     if len(dates) > 0:
-        return os.path.join(YML_DIR_PATH, "{}.yml".format(dates[-1]))
+        return os.path.join(YML_DIR_PATH, "{}".format(dates[-1]))
     else:
         return ""
 

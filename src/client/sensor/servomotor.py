@@ -9,10 +9,9 @@ SERVO_MAX_ANGLE = config.SERVO_MAX_ANGLE
 
 motor_pin_info = {
      #motor_name : motor_pin_num
-     "medicine1" : AngularServo(PIN_A, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
-     #,
-     #"medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
-     #"medicine3" : AngularServo(PIN_C, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
+     "medicine1" : AngularServo(PIN_A, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
+     "medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
+     "medicine3" : AngularServo(PIN_C, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
 }
 
 
@@ -29,6 +28,8 @@ def medicine_out(medicine_info):
 
 
 def control_servo_motor(motor_name, times):
+    ## TODO
+    ## 서보모터 180도 회전
     if motor_name not in motor_pin_info.keys():
         return False
     
