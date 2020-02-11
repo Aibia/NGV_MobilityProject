@@ -1,9 +1,11 @@
 import os
+import cv2
+import numpy
 from datetime import datetime
 from client.db import database
 from client.vision import utils
 from client.vision.cascade import haar
-from client import config
+from client import config, logger
 
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -16,8 +18,8 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     if OLD_RECOGNIZER:
         OLD_RECOGNIZER_PATH = utils.get_latest_yml_path()
-        if OLD_RECOGNIZER_PATH != "":
-            recognizer.read()
+        if OLD_RECOGNIZER_PATH != "" and os.path.exists(OLD_RECOGNIZER_PATH):
+            recognizer.read(OLD_RECOGNIZER_PATH)
     elif os.path.exists(recognizer_path):
         recognizer.read(recognizer_path)
     recognizer.train(datasets["faces"], datasets["ids"]) 
@@ -25,11 +27,15 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
     return database.save_new_patient(datasets["ids"][0])
 
 def register_patient():
+    new_id = utils.create_new_id()
     datasets = {
         "faces" : [],
-        "ids" : [util.create_new_id()] * TAKE_PIC_TIMES
+        "ids" : numpy.array([new_id] * TAKE_PIC_TIMES)
     }
-    for i in range(TAKE_PIC_TIMES):
+    logger.log.info("new patient id is "+ str(new_id))
+    for i in range(1, TAKE_PIC_TIMES+1):
         face = haar.find_face()
+        logger.log.info("Take "+str(i))
         datasets["faces"].append(face)
+    logger.log.info("taking a pic is finished")
     return train_recognizer(datasets)

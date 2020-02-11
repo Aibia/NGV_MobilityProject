@@ -15,7 +15,7 @@ def find_patient(recognizer_path=LATEST_YML_PATH):
     face = haar.find_face()
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     font = cv2.FONT_HERSHEY_SIMPLEX
-    assert os.path.exists(recognizer_path)
+    assert os.path.exists(recognizer_path) == False
     recognizer.read(recognizer_path)
     id, confidence = recognizer.predict(face)
     return id, "{}".format(round(100-confidence))

@@ -9,9 +9,10 @@ SERVO_MAX_ANGLE = config.SERVO_MAX_ANGLE
 
 motor_pin_info = {
      #motor_name : motor_pin_num
-     "medicine1" : AngularServo(PIN_A, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
-     "medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
-     "medicine3" : AngularServo(PIN_C, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
+     "medicine1" : AngularServo(PIN_A, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
+     #,
+     #"medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE),
+     #"medicine3" : AngularServo(PIN_C, min_angle=SERVO_MIN_ANGLE, max_angle=SERVO_MAX_ANGLE)
 }
 
 

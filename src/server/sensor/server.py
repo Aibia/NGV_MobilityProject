@@ -29,4 +29,5 @@ def application(request):
 
 
 if __name__ == '__main__':
+    logger.log.info("Start server " + config.SERVER_IP_ADDR + ":" + config.SERVER_PORT +"... ")
     run_simple(config.SERVER_IP_ADDR, config.SERVER_PORT, application)

@@ -4,7 +4,7 @@ from aiy.cloudspeech import CloudSpeechClient
 from aiy.board import Board
 
 # clova stt
-def clova_stt(lang="Kor", client_id, client_secret, voice_file_path):
+def clova_stt(client_id, client_secret, voice_file_path, lang="Kor"):
     #
     # API : https://apidocs.ncloud.com/ko/ai-naver/clova_speech_recognition/stt/
     # price : 4won/15sec 

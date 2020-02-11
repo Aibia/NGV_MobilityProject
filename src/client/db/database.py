@@ -35,7 +35,7 @@ def get_medicine_info(patient_id):
 
 
 def has_patient_id(patient_id):
-    if get_patient_info(patient_id) == {}:
+    if get_patient_info(patient_id)['id'] == '':
         return False
     return True
 
@@ -44,7 +44,7 @@ def save_patient_info(patient_id, patient_info):
     field_names = patient_info.keys()
     with open(PATIENT_INFO_CSV_PATH, 'a') as fd:
         csv_dict_fd = csv.DictWriter(fd, fieldnames=field_names)
-        writer.writerow(patient_info)
+        csv_dict_fd.writerow(patient_info)
     return True
 
 
@@ -52,7 +52,7 @@ def save_medicine_info(patient_id, medicine_info):
     field_names = medicine_info.keys()
     with open(MEDICINE_INFO_CSV_PATH, 'a') as fd:
         csv_dict_fd = csv.DictWriter(fd, fieldnames=field_names)
-        writer.writerow(medicine_info)
+        csv_dict_fd.writerow(medicine_info)
     return True
     
     
@@ -81,4 +81,4 @@ def save_new_patient(patient_id):
         tts.say("What is your age?")
         age = stt.google_stt()
         count += 1
-    return save_patient_info(patient_id, {"name":name, "age":age}), save_medicine_info(patient_id, {"medicine1":0, "medicine2":1, "medicine3":0})
+    return save_patient_info(patient_id, {"id":patient_id, "name":name, "age":age}), save_medicine_info(patient_id, {"id":patient_id, "medicine1":0, "medicine2":1, "medicine3":0})

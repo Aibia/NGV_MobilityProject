@@ -22,16 +22,16 @@ class Logger:
         self.__logger.addHandler(file_handler)
     
 
-    def info(self):
-        return self.__logger.info
+    def info(self, text):
+        return self.__logger.info(text)
 
 
-    def warning(self):
-        return self.__logger.warning
+    def warning(self, text):
+        return self.__logger.warning(text)
 
 
-    def debug(self):
-        return self.__logger.debug
+    def debug(self, text):
+        return self.__logger.debug(text)
 
 
 log = Logger()
