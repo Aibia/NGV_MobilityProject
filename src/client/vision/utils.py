@@ -3,8 +3,8 @@ import string
 import random
 import numpy as np
 from datetime import date
-from ..db import database
-from .. import config
+from client.db import database
+from client import config
 
 ID_LENGTH = config.ID_LENGTH
 STRING_POOL = string.ascii_lowercase

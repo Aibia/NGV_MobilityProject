@@ -1,8 +1,8 @@
 import os
 import cv2
 from datetime import datetime
-from ..vision import utils
-from .cascade import haar
+from client.vision import utils
+from client.vision.cascade import haar
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 TEMP_DIR_PATH = os.path.join(CURRENT_DIR_PATH, "temp")

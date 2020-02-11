@@ -1,9 +1,9 @@
 import os
 from datetime import datetime
-from ..db import database
-from ..vision import utils
-from ..vision.cascade import haar
-from .. import config
+from client.db import database
+from client.vision import utils
+from client.vision.cascade import haar
+from client import config
 
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
