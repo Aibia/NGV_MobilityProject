@@ -26,6 +26,7 @@ class Camera(object):
         Camera.last_access = time.time()
         self.initialize()
         return self.frame
+        
     
     @classmethod
     def capture(cls):

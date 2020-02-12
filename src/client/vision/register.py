@@ -12,7 +12,7 @@ CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 TEMP_DIR_PATH = os.path.join(CURRENT_DIR_PATH, "temp")
 YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d') 
-TAKE_PIC_TIMES = config.TAKE_PIC_TIMES
+
 
 def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), OLD_RECOGNIZER=True):
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -29,10 +29,12 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
 def train(patient_id, data_path):
     images = [os.path.join(data_path, f) for f in os.listdir(data_path) if os.path.isfile(os.path.join(data_path,f))]
     faces = []
-    labels = [int(patient_id)] * len(images)
     for image_path in images:
         face = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-        faces.append(numpy.asarray(face, dtype=numpy.uint8))
+        face = haar.get_gray_face(face)
+        if face != []:
+            faces.append(numpy.asarray(face, dtype=numpy.uint8))
+    labels = numpy.asarray([int(patient_id)] *len(faces))
     labels = numpy.asarray(labels)
     datasets = {
         "faces" : faces, 

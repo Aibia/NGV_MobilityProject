@@ -1,4 +1,5 @@
 import os
+import cv2
 import sys
 from flask import Flask, render_template, Response, redirect, request, url_for, make_response
 from camera import Camera
@@ -12,6 +13,7 @@ sys.path.append(ROOT_DIR_PATH)
 from client.db import database
 from client import config
 from client.vision import register as vision_register
+from client.vision.cascade import haar
 
 app = Flask(__name__)
 app._static_folder = IMAGES_DIR_PATH
@@ -95,9 +97,9 @@ def capture(patient_id):
     file_path = os.path.join(PATIENT_IMAGE_DIR_PATH, file_name)
     with open(file_path, 'wb') as fd:
         fd.write(captured_img)
+    #haar.save_gray_face(file_path)
     return os.path.join(os.path.join('/static', patient_id), file_name)
 
-    
 
 
 
