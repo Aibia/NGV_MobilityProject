@@ -8,6 +8,7 @@ from client.voice import utils
 client_id = config.CLIENT_ID
 client_secret = config.CLIENT_SERVER_X_NCP_APIGW_API_KEY
 VOICE_DIR_PATH = os.path.join(config.VOICE_DIR_PATH, 'voices')
+TTS_FILE_NAME_LENGTH = config.TTS_FILE_NAME_LENGTH
 
 def say(text):
     """
@@ -33,12 +34,15 @@ def clova_tts(text, lient_id=client_id, client_secret=client_secret, lang="Kor")
     rescode = response.getcode()
 
     if(rescode == 200):
-        logger.log.info("success clova_tts")
+        logger.log.info("Success Clova_tts")
         response_body = response.read()
-        file_path = os.path.join(VOICE_DIR_PATH, 'tts.mp3')
+        if os.path.exists(VOICE_DIR_PATH) == False:
+            os.mkdir(VOICE_DIR_PATH)
+        file_path = os.path.join(VOICE_DIR_PATH, utils.randome_file_name(TTS_FILE_NAME_LENGTH))
         with open(file_path, 'wb') as fd:
             fd.write(response_body)
+        logger.log.info("TTS Voice File Saved to {}".format(file_path))
         return utils.play_mp3(file_path)
     else:
-        logger.log.info("error clova_tts")
+        logger.log.debug("Error clova_tts")
         return False

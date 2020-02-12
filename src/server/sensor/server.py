@@ -2,7 +2,7 @@ from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 from jsonrpc import JSONRPCResponseManager, dispatcher
 import RPi.GPIO as GPIO
-from .. import config, logger
+from server import config, logger
 
 @dispatcher.add_method
 def gpio_pin_change(pin_num, pin_opt):

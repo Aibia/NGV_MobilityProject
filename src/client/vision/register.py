@@ -27,15 +27,16 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
     return database.save_new_patient(datasets["ids"][0])
 
 def register_patient():
-    new_id = utils.create_new_id()
+    new_id = database.create_new_id()
     datasets = {
         "faces" : [],
         "ids" : numpy.array([new_id] * TAKE_PIC_TIMES)
     }
-    logger.log.info("new patient id is "+ str(new_id))
+    logger.log.info("New patient id is "+ str(new_id))
     for i in range(1, TAKE_PIC_TIMES+1):
         face = haar.find_face()
         logger.log.info("Take "+str(i))
         datasets["faces"].append(face)
-    logger.log.info("taking a pic is finished")
+    datasets["faces"] = numpy.array(datasets["faces"])
+    logger.log.info("Taking pics is finished")
     return train_recognizer(datasets)

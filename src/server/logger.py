@@ -14,6 +14,8 @@ class Logger:
         return self.instance
 
     def __init__(self):
+        if os.path.exists(LOG_DIR_PATH) == False:
+            os.mkdir(LOG_DIR_PATH)
         self.__logger = logging.getLogger(__name__)
         self.__logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('[%(levelname)s] (%(filename)s:%(lineno)d) > %(message)s')
