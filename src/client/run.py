@@ -9,15 +9,18 @@ from client.sensor import servomotor, request
 from client.voice import tts, stt
 from client import logger, config
 
+signal.signal(signal.SIGINT, logger.log.info("Stop running app ..."))
+
 def html():
     with Board() as board:
         proc = subprocess.Popen(['python3', config.APP_PATH])
         time.sleep(5)
         board.led.state = Led.ON
         if board.button.wait_for_press():
-            proc.kill()
+            os.kill(proc.pid, 9)
         board.led.state = Led.OFF
     return True
+    
 
 def main():
     html()
@@ -25,10 +28,12 @@ def main():
     
     while True:
         # 환자 얼굴 찾기
-        patient_id = recognizer.find_patient()
-
+        patient_id, confidence = recognizer.find_patient()
+        if patient_id == -1:
+            continue
+        logger.log.info("Patient found patient_id : {} confidence : {}".format(patient_id, config))
         # 주행 멈추기 
-        logger.log.info("Patient found Stop running ")
+        logger.log.info(" Stop running ...")
         ret = request.gpio_pin_change_out()
         #if ret == False:
         #    logger.log.debug("Error Can't Stop Running")

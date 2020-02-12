@@ -27,7 +27,6 @@ def application(request):
         request.data, dispatcher)
     return Response(response.json, mimetype='application/json')
 
-
-if __name__ == '__main__':
-    logger.log.info("Start server " + config.SERVER_IP_ADDR + ":" + config.SERVER_PORT +"... ")
+def run_sensor_server():
+    logger.log.info("Start server {}:{} ...".format(config.SERVER_IP_ADDR, config.SERVER_PORT))
     run_simple(config.SERVER_IP_ADDR, config.SERVER_PORT, application)

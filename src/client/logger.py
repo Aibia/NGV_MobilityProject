@@ -20,8 +20,10 @@ class Logger:
         self.__logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('[%(levelname)s] > %(message)s')
         file_handler = logging.FileHandler(os.path.join(LOG_DIR_PATH, '{}.log'.format(TODAY)))
+        stream_handler = logging.StreamHandler()
         file_handler.setFormatter(formatter)
         self.__logger.addHandler(file_handler)
+        self.__logger.addHandler(stream_handler)
     
 
     def info(self, text):

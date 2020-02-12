@@ -1,6 +1,6 @@
 import os
 import sys
-from flask import Flask, render_template, Response, redirect, request, url_for
+from flask import Flask, render_template, Response, redirect, request, url_for, make_response
 from camera import Camera
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -22,22 +22,33 @@ def index():
     return render_template('index.html', patient_id=new_patient_id)
 
 
-@app.route('/register/<int:patient_id>', methods=['POST', 'GET'])
+@app.route('/register/<patient_id>', methods=['GET', 'POST'])
 def register(patient_id):
+    error=""
     if request.method =="POST":
-        
         patient_id = request.form["patient_id"]
         name = request.form["name"]
         age = request.form["age"]
         medicine1 = request.form["medicine1"]
         medicine2 = request.form["medicine2"]
         medicine3 = request.form["medicine3"]
+        if name == "" or age == "" or medicine1 =="" or medicine2=="" or medicine3=="":
+            error = "Error! blank found"
+            return make_response(render_template('register.html', patient_id=patient_id, error=error))
+        else:
+            try:
+                int(age)
+                int(medicine1)
+                int(medicine2)
+                int(medicine3)
+            except Exception as e:
+                error = "Error! int : age, medicine1, medicine2, medicine3 "
+                return make_response(render_template('register.html', patient_id=patient_id, error=error))
         patient_info = {
             "id" : patient_id,
             "name" : name,
             "age" : age
         }
-
         medicine_info = {
             "id" : patient_id,
             "medicine1" : medicine1,
@@ -50,9 +61,12 @@ def register(patient_id):
         else:
             database.delete_medicine_info(patient_id)
             database.delete_patient_info(patient_id)
+    PATIENT_IMAGE_DIR_PATH = os.path.join(IMAGES_DIR_PATH, patient_id)
+    if os.path.exists(PATIENT_IMAGE_DIR_PATH) == False:
+        os.mkdir(PATIENT_IMAGE_DIR_PATH)
     if database.has_patient_id(patient_id):
         return redirect(url_for('index'))
-    return render_template('register.html', patient_id=patient_id)
+    return render_template('register.html', patient_id=patient_id, error=error)
 
 
 def gen(camera):
@@ -88,4 +102,4 @@ def capture(patient_id):
 
 
 if __name__ == "__main__":
-    app.run(host=config.HOST_IP_ADDR, debug=True, threaded=True)
+    app.run(host=config.HOST_IP_ADDR, debug=False, threaded=True)
