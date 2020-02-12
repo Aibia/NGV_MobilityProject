@@ -1,0 +1,50 @@
+<html>
+<head>
+	<title>New Patient Register</title>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+</head>
+<body>
+	<h1>New Patient Register Page</h1>
+	<h2>Patient ID : {{patient_id}}</h2>
+	<div>
+		<div id="video">
+			<img src="{{ url_for('video_feed') }}">
+			<br>
+			<br>
+			<button id="capture">capture</button><br><br>
+		</div>
+
+		<div id="info">
+			<form action="" method="post">
+				<input type="hidden" value="{{patient_id}}" name="patient_id" id="patient_id" />
+				Name : <input type="text" name="name" id="name"/><br>
+				Age : <input type="text" name="age" id="age"/><br>
+				<br>
+				Medicine 1 : <input type="text" name="medicine1" id="medicine1"/><br>
+				Medicine 2 : <input type="text" name="medicine2" id="medicine2"/><br>
+				Medicine 3 : <input type="text" name="medicine3" id="medicine3"/><br>
+				<button type="submit">submit</button>
+			</form>
+		</div>
+		<br>
+		<br>
+		<div id="captures">
+		</div>
+	</div>
+
+
+	<script>
+		$( 'button#capture' ).click(function() {
+			$.get( '/capture/{{patient_id}}')
+			.done(function( data ) {
+				if (data != 'fail') {
+					$('div#captures').append('<img src="'+data+'">');
+				}else {
+					alert("Fail ");
+				}
+
+			});
+		});
+	</script>
+</body>
+</html>

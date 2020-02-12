@@ -21,7 +21,7 @@ def clova_stt(client_id=client_id, client_secret=client_secret, lang=LANGUAGE):
     # price : 4won/15sec 
     #
     url = "https://naveropenapi.apigw.ntruss.com/recog/v1/stt?lang=" + lang
-    data = open(utils.voice_recoder(utils.randome_file_name(STT_FILE_NAME_LENGTH)), 'rb')
+    data = open(utils.voice_recoder(utils.randome_file_name(STT_FILE_NAME_LENGTH)+".wav"), 'rb')
     headers = {
         "X-NCP-APIGW-API-KEY-ID": client_id,
         "X-NCP-APIGW-API-KEY": client_secret,

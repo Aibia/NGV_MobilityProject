@@ -24,19 +24,19 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
         recognizer.read(recognizer_path)
     recognizer.train(datasets["faces"], datasets["ids"]) 
     recognizer.write(recognizer_path) 
-    return database.save_new_patient(datasets["ids"][0])
+    return True
 
-def register_patient():
-    new_id = database.create_new_id()
+def train(patient_id, data_path):
+    images = [os.path.join(data_path, f) for f in os.listdir(data_path) if os.path.isfile(os.path.join(data_path,f))]
+    faces = []
+    labels = [int(patient_id)] * len(images)
+    for image_path in images:
+        face = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        faces.append(numpy.asarray(face, dtype=numpy.uint8))
+    labels = numpy.asarray(labels)
     datasets = {
-        "faces" : [],
-        "ids" : numpy.array([new_id] * TAKE_PIC_TIMES)
+        "faces" : faces, 
+        "ids" : labels
     }
-    logger.log.info("New patient id is "+ str(new_id))
-    for i in range(1, TAKE_PIC_TIMES+1):
-        face = haar.find_face()
-        logger.log.info("Take "+str(i))
-        datasets["faces"].append(face)
-    datasets["faces"] = numpy.array(datasets["faces"])
-    logger.log.info("Taking pics is finished")
     return train_recognizer(datasets)
+

@@ -1,11 +1,8 @@
 import os
 import cv2
 import time
-from gpiozero import LED
-from aiy.pins import LED_1
-from client import logger
-## LED_1 is on when camera is finding a face
-## LED_2 is on when camera captures a face
+from client import logger, config
+from aiy.board import Board, Led
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 OPEN_CV_DIR_PATH = os.path.join(CURRENT_DIR_PATH, "opencv-data")
@@ -13,56 +10,55 @@ HAAR_CASCADE_DIR_PATH = os.path.join(OPEN_CV_DIR_PATH, "haarcascades")
 FACE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_frontalcatface.xml")
 EYE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_eye.xml")
 
-	
-def find_face(GRAY=True, display=False):
-    ## TODO
-    ## 디스플레이 감지하면 자동으로 화면 띄우기
-    ## 화면에 탐지되고 있는 위치 표시
+DISPLAY_ON = config.DISPLAY_ON
+DISPLAY_COLOR_ON = config.DISPLAY_COLOR_ON
+CHECK_FACE_TIME_OUT = config.CHECK_FACE_TIME_OUT
+
+def get_faces():
     try:
-        display=True
+        faces = []
         face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
         cap = cv2.VideoCapture(0)
-        led_1 = LED(LED_1)
-        logger.log.info("Start to find a face ...")
-        led_1.on()
         while True:
             # Read the frame
-            ## TODO
-            ## GPIO ERROR SOLVING
-            #led_1.blink(0.1,0.1,2)
-            #time.sleep(0.2)
-            _, img = cap.read()
-            
+            _, frame = cap.read()
             # Convert to grayscale
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             # Detect the faces
-            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+            tmp_faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
+            for(x, y, w, h) in tmp_faces:
+                if DISPLAY_COLOR_ON:
+                    img = frame[y:y+h, x:x+w]
+                else:
+                    img = gray[y:y+h, x:x+w]
+                faces.append(img)
             if len(faces) > 0:
-                #led_2.blink(0.2,0.2,2)
-                #time.sleep(0.4)
                 break
-            elif display and GRAY:
-                cv2.imshow('camera', gray)
-            elif display:
-                cv2.imshow('camera', img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        led_1.off()
         cap.release()
-        if display:
-            cv2.destroyAllWindows()
-
-        if GRAY:
-            for (x, y, w, h) in faces:
-                gray = gray[y:y+h, x:x+w]
-            img = gray
-        else:
-            for (x, y, w, h) in faces:
-                img = img[y:y+h, x:x+w]
     except Exception as e:
         logger.log.debug("Error " + str(e))
         return []
     else:
-        return img
+        return faces
+
+def find_face():
+    face = []
+    with Board() as board:
+        while face == []:
+            for tmp_face in get_faces():
+                if DISPLAY_ON:
+                    cv2.imshow('face', tmp_face)
+                time.sleep(10)
+                board.led.state = Led.ON
+                if board.button.wait_for_press(CHECK_FACE_TIME_OUT):
+                    face = tmp_face
+                board.led.state = Led.OFF
+            if DISPLAY_ON:
+                cv2.destroyAllWindows()
+    return face
+        
+        
+        

@@ -38,7 +38,7 @@ def clova_tts(text, lient_id=client_id, client_secret=client_secret, lang="Kor")
         response_body = response.read()
         if os.path.exists(VOICE_DIR_PATH) == False:
             os.mkdir(VOICE_DIR_PATH)
-        file_path = os.path.join(VOICE_DIR_PATH, utils.randome_file_name(TTS_FILE_NAME_LENGTH))
+        file_path = os.path.join(VOICE_DIR_PATH, utils.randome_file_name(TTS_FILE_NAME_LENGTH)+".mp3")
         with open(file_path, 'wb') as fd:
             fd.write(response_body)
         logger.log.info("TTS Voice File Saved to {}".format(file_path))
