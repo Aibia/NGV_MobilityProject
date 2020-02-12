@@ -1,9 +1,10 @@
 import os
 import cv2
+import time
 from datetime import datetime
 from client.vision import utils
 from client.vision.cascade import haar
-from client import logger
+from client import logger, config
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
@@ -20,5 +21,9 @@ def find_patient(recognizer_path=LATEST_YML_PATH):
         logger.log.debug("No Such File : {}".format(recognizer_path))
         return -1, "-1"
     recognizer.read(recognizer_path)
+    if config.DISPLAY_ON:
+        cv2.imshow('face', face)
+        time.sleep(1)
+    cv2.destroyAllWindows()
     id, confidence = recognizer.predict(face)
     return id, "{}".format(round(100-confidence))

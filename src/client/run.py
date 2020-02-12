@@ -1,15 +1,26 @@
+import os
+import signal
+import time
+import subprocess
+from aiy.board import Board, Led
 from client.db import database
 from client.vision import recognizer
 from client.sensor import servomotor, request
 from client.voice import tts, stt
 from client import logger, config
 
-def open_html():
-    
+def html():
+    with Board() as board:
+        proc = subprocess.Popen(['python3', config.APP_PATH])
+        time.sleep(5)
+        board.led.state = Led.ON
+        if board.button.wait_for_press():
+            proc.kill()
+        board.led.state = Led.OFF
+    return True
 
 def main():
-    ## TODO 
-    ## 버튼이 눌리면 새 환자 저장하기 
+    html()
     logger.log.info("Start running client app")
     
     while True:

@@ -14,7 +14,7 @@ DISPLAY_ON = config.DISPLAY_ON
 DISPLAY_COLOR_ON = config.DISPLAY_COLOR_ON
 CHECK_FACE_TIME_OUT = config.CHECK_FACE_TIME_OUT
 
-def get_faces():
+def find_face():
     try:
         faces = []
         face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
@@ -37,28 +37,20 @@ def get_faces():
                 break
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+            if DISPLAY_ON and DISPLAY_COLOR_ON:
+                cv2.imshow('camera', frame)
+            elif DISPLAY_ON:
+                cv2.imshow('camera', gray)
+
         cap.release()
+        if DISPLAY_ON:
+            cv2.destroyAllWindows()
     except Exception as e:
         logger.log.debug("Error " + str(e))
         return []
     else:
         return faces
 
-def find_face():
-    face = []
-    with Board() as board:
-        while face == []:
-            for tmp_face in get_faces():
-                if DISPLAY_ON:
-                    cv2.imshow('face', tmp_face)
-                time.sleep(10)
-                board.led.state = Led.ON
-                if board.button.wait_for_press(CHECK_FACE_TIME_OUT):
-                    face = tmp_face
-                board.led.state = Led.OFF
-            if DISPLAY_ON:
-                cv2.destroyAllWindows()
-    return face
         
         
         
