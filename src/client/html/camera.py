@@ -35,7 +35,8 @@ class Camera(object):
     @classmethod
     def _thread(cls):
         with picamera.PiCamera() as camera:
-            camera.resolution = (250, 250)
+            camera.resolution = (400, 400)
+            camera.color_effects = (128,128)
             camera.hflip = True
             camera.vflip = False
 

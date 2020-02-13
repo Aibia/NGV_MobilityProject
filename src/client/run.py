@@ -34,16 +34,18 @@ def main():
                 continue
             logger.log.info("Patient found patient_id : {} confidence : {}".format(patient_id, config))
             # 주행 멈추기 
+            patinet_id = 1
             logger.log.info(" Stop running ...")
             ret = request.gpio_pin_change_out()
+            time.sleep(10)
             #if ret == False:
             #    logger.log.debug("Error Can't Stop Running")
             # 환자 정보 갖고오기 
-            patient_info = database.get_patient_info(patient_id)
-            medicine_info = database.get_medicine_info(patient_id)
-            tts.clova_tts("안녕하세요 {}님".format(patient_info["name"]))
+            #patient_info = database.get_patient_info(patient_id)
+            #medicine_info = database.get_medicine_info(patient_id)
+            #tts.clova_tts("안녕하세요 {}님".format(patient_info["name"]))
             # 약 배출 
-            servomotor.medicine_out(medicine_info)
+            #servomotor.medicine_out(medicine_info)
             request.gpio_pin_change_in()
         except Exception as e:
             logger.log.debug("{}".format(e))

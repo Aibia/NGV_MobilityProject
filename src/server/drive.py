@@ -6,23 +6,37 @@ import RPi.GPIO as GPIO
 import signal
 import sys
 import Adafruit_PCA9685
-
+from server import config
+from server import logger
 pwm = Adafruit_PCA9685.PCA9685()
 
 
-PIN_NUMBER = 15
+MOTOR_STOP_PIN_NUM = config.MOTOR_STOP_PIN_NUM
+SERVO_PIN_NUM = config.SERVO_PIN_NUM
+MOTOR_PIN_NUM = config.MOTOR_PIN_NUM
+COMMU_PIN_NUM = config.COMMU_PIN_NUM
+SERVO_LEFT = config.SERVO_LEFT
+SERVO_MID = config.SERVO_MID
+SERVO_RIGHT = config.SERVO_RIGHT
+## 가공 전 Steering Value
+__SERVO_LEFT = config.__SERVO_LEFT
+__SERVO_MID = config.__SERVO_MID
+__SERVO_RIGHT = config.__SERVO_RIGHT
+MOTOR_STOP = config.MOTOR_STOP
+MOTOR_FORWARD = config.MOTOR_FORWARD
+FIRST_FORWARD = config.FIRST_FORWARD
+FIRST_MOTOR_FORWARD = config.FIRST_MOTOR_FORWARD
+## DISPLAY CONFIG
+DISPLAY_ON = config.DISPLAY_ON
 
+GPIO.setmode(GPIO.BOARD)
+pwm.set_pwm(SERVO_PIN_NUM, 0, SERVO_MID)
 
 def detect_edges(frame):
     gray = cv2.cvtColor(frame, 6)
-    # cv2.imshow("GRAY", gray)
     mask = cv2.bilateralFilter(gray, 3, 15, 15, 4)
-    # cv2.imshow("mask", mask)
-
     # detect edges
     edges = cv2.Canny(mask, 100, 200)
-    # cv2.imshow("edges",edges)
-
     return edges
 
 
@@ -41,8 +55,6 @@ def region_of_interest(edges):
     cv2.fillPoly(mask, polygon, 255)
 
     cropped_edges = cv2.bitwise_and(edges, mask)
-    #cv2.imshow("roi", cropped_edges)
-
     return cropped_edges
 
 
@@ -53,7 +65,6 @@ def detect_line_segments(cropped_edges):
 
     line_segments = cv2.HoughLinesP(cropped_edges, rho, theta, min_threshold,
                                     np.array([]), minLineLength=5, maxLineGap=150)
-
     return line_segments
 
 
@@ -61,7 +72,7 @@ def average_slope_intercept(frame, line_segments):
     lane_lines = []
 
     if line_segments is None:
-        print("no line segments detected")
+        logger.log.info("no line segments detected")
         return lane_lines
 
     height, width, _ = frame.shape
@@ -75,7 +86,7 @@ def average_slope_intercept(frame, line_segments):
     for line_segment in line_segments:
         for x1, y1, x2, y2 in line_segment:
             if x1 == x2:
-                print("skipping vertical lines (slope = infinity)")
+                logger.log.info("skipping vertical lines (slope = infinity)")
                 continue
 
             fit = np.polyfit((x1, x2), (y1, y2), 1)
@@ -102,7 +113,6 @@ def average_slope_intercept(frame, line_segments):
 
 def make_points(frame, line):
     height, width, _ = frame.shape
-
     slope, intercept = line
 
     y1 = height  # bottom of the frame
@@ -113,20 +123,17 @@ def make_points(frame, line):
 
     x1 = int((y1 - intercept) / slope)
     x2 = int((y2 - intercept) / slope)
-
     return [[x1, y1, x2, y2]]
 
 
 def display_lines(frame, lines, line_color=(0, 255, 0), line_width=6):
     line_image = np.zeros_like(frame)
-
     if lines is not None:
         for line in lines:
             for x1, y1, x2, y2 in line:
                 cv2.line(line_image, (x1, y1), (x2, y2), line_color, line_width)
 
     line_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
-
     return line_image
 
 
@@ -143,7 +150,6 @@ def display_heading_line(frame, steering_angle, line_color=(0, 0, 255), line_wid
 
     cv2.line(heading_image, (x1, y1), (x2, y2), line_color, line_width)
     heading_image = cv2.addWeighted(frame, 0.8, heading_image, 1, 1)
-
     return heading_image
 
 
@@ -177,83 +183,66 @@ def get_steering_angle(frame, lane_lines):
     return steering_angle, num_lane
 
 def stop_forwarding(sig, frame):
-    pwm.set_pwm(motor_pin, 0 ,motor_stop)
-    print ('stopped!')
+    pwm.set_pwm(MOTOR_PIN_NUM, 0 ,MOTOR_STOP)
+    logger.log.info('Stopped!')
     sys.exit(0)
 
 signal.signal(signal.SIGINT, stop_forwarding)
 
-video = cv2.VideoCapture(0)
-video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+def run():
+    before_angle = __SERVO_MID
+    video = cv2.VideoCapture(0)
+    video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+    video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
-time.sleep(1)
+    time.sleep(1)
 
-servo_pin = 0
-motor_pin = 15
-commu_pin = 20
+    pwm.set_pwm_freq(60)
+    while True:
+        while GPIO.gpio_function(MOTOR_STOP_PIN_NUM) == GPIO.OUT:
+            pwm.set_pwm(MOTOR_PIN_NUM, 0, MOTOR_STOP)
+            logger.log.info("Stopped !")
+            time.sleep(1)
+        _, frame = video.read()
 
-servo_left = 270    #40
-servo_mid = 370     #90
-servo_right = 470   #140
+        edges = detect_edges(frame)
+        roi = region_of_interest(edges)
+        line_segments = detect_line_segments(roi)
+        lane_lines = average_slope_intercept(frame, line_segments)
+        lane_lines_image = display_lines(frame, lane_lines)
+        steering_angle, num_lane = get_steering_angle(frame, lane_lines)
+        if DISPLAY_ON:
+            heading_image = display_heading_line(lane_lines_image, steering_angle)
+            cv2.imshow('video', heading_image)
 
-motor_stop = 380
-motor_forward = 393
+        deviation = abs(steering_angle - before_angle)
 
-pwm.set_pwm_freq(60)
+        if deviation < 4:
+            steering_angle = int((steering_angle + before_angle) / 2)
+        elif deviation > 60:
+            steering_angle = before_angle
 
-##fourcc = cv2.VideoWriter_fourcc(*'XVID')
-##out = cv2.VideoWriter('Original15.avi',fourcc,10,(320,240))
-##out2 = cv2.VideoWriter('Direction15.avi',fourcc,10,(320,240))
+        if num_lane == 0:
+            steering_angle = before_angle
 
-GPIO.setmode(GPIO.BOARD)
-pwm.set_pwm(servo_pin, 0, servo_mid)
+        before_angle = steering_angle
+        logger.log.info("before_angle : {} steering_angle : {}".format(before_angle, steering_angle))
+        pwm.set_pwm(MOTOR_PIN_NUM, 0, MOTOR_FORWARD)
+        if steering_angle > __SERVO_RIGHT:
+            steering_angle = __SERVO_RIGHT
+        if steering_angle < __SERVO_LEFT:
+            steering_angle = __SERVO_LEFT
 
-while True:
-    while GPIO.gpio_function(PIN_NUMBER) == GPIO.OUT:
+        if steering_angle <= 100 and steering_angle >= 80:  #straight
+            servo_pwm = steering_angle + 280
+        elif steering_angle > 100:  #right
+            servo_pwm = -0.0214 * steering_angle * 2 - 7.75 * steering_angle - 195
+        else: #left
+            servo_pwm = 0.0583 * steering_angle ** 2 - 4.1488 * steering_angle + 342.41
 
-        time.sleep(1)
-    ret, frame = video.read()
-    # frame = cv2.flip(frame, -1)
-
-    #cv2.imshow("original", frame)
-    edges = detect_edges(frame)
-    roi = region_of_interest(edges)
-    line_segments = detect_line_segments(roi)
-    lane_lines = average_slope_intercept(frame, line_segments)
-    lane_lines_image = display_lines(frame, lane_lines)
-    steering_angle, num_lane = get_steering_angle(frame, lane_lines)
-    print(steering_angle)
-    heading_image = display_heading_line(lane_lines_image, steering_angle)
-    #cv2.imshow("heading line", heading_image)
-
-    ##    out.write(frame)
-    ##    out2.write(heading_image)
-    
-    if num_lane == 0:
-        steering_angle = before_angle
-        
-    before_angle = steering_angle
-    
-    if steering_angle > 140:
-        steering_angle = 140
-    elif steering_angle < 40:   #36
-        steering_angle = 40
-
-    pwm.set_pwm(motor_pin, 0, motor_forward)
-
-    #servo_pwm = 2 * steering_angle + 190    #1차 -> 40-140 / 270, 370
-    #servo_pwm = 2.1143 * steering_angle + 172.53 #1차 -> 36-140 / 250, 360
-    #servo_pwm = 0.0000000000000002 * steering_angle ** 2 + 2*steering_angle + 190 #2차 -> 40-140 / 270, 370
-    servo_pwm = 0.0016 * steering_angle ** 2 + 1.8396*steering_angle + 181.74   #2차 -> 36-140 / 250, 360
-
-    pwm.set_pwm(servo_pin, 0, servo_pwm)
-
-    key = cv2.waitKey(1)
-    if key == 27:
-        break
-
-video.release()
-##out.release()
-##out2.release()
-cv2.destroyAllWindows()
+        pwm.set_pwm(SERVO_PIN_NUM, 0, int(servo_pwm))
+        key = cv2.waitKey(1)
+        if key == 27:
+            break
+    video.release()
+    cv2.destroyAllWindows()

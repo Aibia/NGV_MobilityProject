@@ -57,12 +57,16 @@ def register(patient_id):
             "medicine2" : medicine2,
             "medicine3" : medicine3
         }
-        if database.save_patient_info(patient_id, patient_info) and database.save_medicine_info(patient_id, medicine_info) \
-            and vision_register.train(patient_id, os.path.join(IMAGES_DIR_PATH, patient_id)):
-            return redirect(url_for('index'))
+        if database.save_patient_info(patient_id, patient_info) and \
+            database.save_medicine_info(patient_id, medicine_info):
+            if vision_register.train(patient_id, os.path.join(IMAGES_DIR_PATH, patient_id)):
+                return redirect(url_for('index'))
+            else:
+                error = "Error No Face Found"
+                database.delete_medicine_info(patient_id)
+                database.delete_patient_info(patient_id)
         else:
-            database.delete_medicine_info(patient_id)
-            database.delete_patient_info(patient_id)
+            error = "Error Update Database Failed"
     PATIENT_IMAGE_DIR_PATH = os.path.join(IMAGES_DIR_PATH, patient_id)
     if os.path.exists(PATIENT_IMAGE_DIR_PATH) == False:
         os.mkdir(PATIENT_IMAGE_DIR_PATH)
@@ -74,6 +78,7 @@ def register(patient_id):
 def gen(camera):
     while True:
         frame = camera.get_frame()
+        frame = haar.draw_gray_face(frame)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -97,7 +102,6 @@ def capture(patient_id):
     file_path = os.path.join(PATIENT_IMAGE_DIR_PATH, file_name)
     with open(file_path, 'wb') as fd:
         fd.write(captured_img)
-    #haar.save_gray_face(file_path)
     return os.path.join(os.path.join('/static', patient_id), file_name)
 
 

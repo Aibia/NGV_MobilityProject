@@ -34,6 +34,8 @@ def train(patient_id, data_path):
         face = haar.get_gray_face(face)
         if face != []:
             faces.append(numpy.asarray(face, dtype=numpy.uint8))
+    if len(faces) == 0:
+        return False
     labels = numpy.asarray([int(patient_id)] *len(faces))
     labels = numpy.asarray(labels)
     datasets = {
