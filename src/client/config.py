@@ -35,6 +35,8 @@ DISPLAY_ON = False
 DISPLAY_COLOR_ON = False
 
 ## VOICE CONFIG
+CLOUD_TTS_ON = False
+CLOUD_STT_ON = False
 LANGUAGE = "Kor" ## 언어 코드 ( Kor, Jpn, Eng, Chn )
 APPLICATION_NAME = "ngv"
 CLIENT_ID = "7q1xxkbepv"

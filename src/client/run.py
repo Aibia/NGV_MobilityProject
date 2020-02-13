@@ -32,20 +32,30 @@ def main():
             patient_id, confidence = recognizer.find_patient()
             if patient_id == -1:
                 continue
-            logger.log.info("Patient found patient_id : {} confidence : {}".format(patient_id, config))
+            logger.log.info("Patient found patient_id : {} confidence : {}".format(patient_id, confidence))
             # 주행 멈추기 
-            patinet_id = 1
             logger.log.info(" Stop running ...")
             ret = request.gpio_pin_change_out()
             time.sleep(10)
-            #if ret == False:
-            #    logger.log.debug("Error Can't Stop Running")
+            if ret["status"] == False:
+                logger.log.debug("Error Can't Stop Running")
+                request.gpio_pin_change_in()
+                continue
             # 환자 정보 갖고오기 
-            #patient_info = database.get_patient_info(patient_id)
-            #medicine_info = database.get_medicine_info(patient_id)
-            #tts.clova_tts("안녕하세요 {}님".format(patient_info["name"]))
+            patient_info = database.get_patient_info(patient_id)
+            medicine_info = database.get_medicine_info(patient_id)
+            if patient_info['name'] == "":
+                logger.log.debug("No Patient Found {}".format(patient_id))
+                time.sleep(3)
+                request.gpio_pin_change_in()
+                continue
+            if config.CLOUD_TTS_ON:
+                tts.clova_tts("안녕하세요 {}님".format(patient_info["name"]))
+            else:
+                tts.say("안녕하세요 {}님".format(patient_info["name"]))
             # 약 배출 
-            #servomotor.medicine_out(medicine_info)
+            servomotor.medicine_out(medicine_info)
+            time.sleep(3)
             request.gpio_pin_change_in()
         except Exception as e:
             logger.log.debug("{}".format(e))
