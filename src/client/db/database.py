@@ -20,11 +20,13 @@ def create_random_number():
         RANDOM_STRING += random.choice(NUMBER_STRING_POOL)
     return RANDOM_STRING
 
+
 def create_random_string(LENGTH):
     RANDOM_STRING = ""
     for i in range(LENGTH):
         RANDOM_STRING += random.choice(STR_STRING_POOL)
     return RANDOM_STRING
+
 
 def create_new_id():
     ID = create_random_number()
@@ -96,6 +98,7 @@ def delete_patient_info(patient_id):
         csv_dict_writer.writeheader()
         csv_dict_writer.writerows(patient_infos)
     return True
+
 
 def delete_medicine_info(patient_id):
     field_names = ['id', 'medicine1', 'medicine2', 'medicine3']

@@ -14,19 +14,25 @@ from client.db import database
 from client import config
 from client.vision import register as vision_register
 from client.vision.cascade import haar
+from client.run import Client
 
 app = Flask(__name__)
 app._static_folder = IMAGES_DIR_PATH
 
 @app.route('/')
 def index():
+    if Client().is_alive():
+        return render_template('index.html', patient_id='-1', error="Error NASA Is moving")
     new_patient_id = database.create_new_id()
-    return render_template('index.html', patient_id=new_patient_id)
+    return render_template('index.html', patient_id=new_patient_id, error="")
 
 
 @app.route('/register/<patient_id>', methods=['GET', 'POST'])
 def register(patient_id):
     error=""
+    if Client().is_alive():
+        return redirect(url_for('index'))
+
     if request.method =="POST":
         patient_id = request.form["patient_id"]
         name = request.form["name"]
@@ -35,7 +41,7 @@ def register(patient_id):
         medicine2 = request.form["medicine2"]
         medicine3 = request.form["medicine3"]
         if name == "" or age == "" or medicine1 =="" or medicine2=="" or medicine3=="":
-            error = "Error! blank found"
+            error = "Error! Blank Found"
             return make_response(render_template('register.html', patient_id=patient_id, error=error))
         else:
             try:
@@ -85,12 +91,16 @@ def gen(camera):
 
 @app.route('/video_feed')
 def video_feed():
+    if Client().is_alive():
+        return redirect(url_for('index'))
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/capture/<patient_id>')
 def capture(patient_id):
+    if Client().is_alive():
+        return redirect(url_for('index'))
     captured_img = Camera.capture()
     file_name = '{}.jpg'.format(database.create_random_string(config.TEMP_IMAGE_FILE_NAME_LENGTH))
     if captured_img == None:
