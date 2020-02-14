@@ -11,6 +11,7 @@ VOICE_DIR_PATH = os.path.join(config.VOICE_DIR_PATH, 'voices')
 def randome_file_name(LENGTH):
     return database.create_random_string(LENGTH)
 
+
 def voice_recoder(FILE_NAME):
     if os.path.exists(VOICE_DIR_PATH) == False:
         os.mkdir(VOICE_DIR_PATH)
@@ -35,6 +36,7 @@ def voice_recoder(FILE_NAME):
         board.led.state = Led.OFF
         logger.log.info('Recording finished ...')
     return file_path
+
 
 def play_mp3(file_path):
     if os.path.exists(file_path):

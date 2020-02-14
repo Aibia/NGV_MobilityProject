@@ -26,6 +26,7 @@ def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.ym
     recognizer.write(recognizer_path) 
     return True
 
+
 def train(patient_id, data_path):
     images = [os.path.join(data_path, f) for f in os.listdir(data_path) if os.path.isfile(os.path.join(data_path,f))]
     faces = []

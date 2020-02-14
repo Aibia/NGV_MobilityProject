@@ -33,7 +33,7 @@ def save_gray_face(img_path):
 
 def get_gray_face(frame):
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    faces = face_cascade.detectMultiScale(frame, 1.3, 5)
+    faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30)))
     if len(faces) > 0:
         for (x, y, w, h) in faces:
             return frame[y:y+h, x:x+w]
@@ -43,7 +43,7 @@ def get_gray_face(frame):
 def draw_gray_face(frame):
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
     frame = numpy.fromstring(frame, numpy.uint8)
-    faces = face_cascade.detectMultiScale(frame, 1.3, 5)
+    faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30))
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x,y), (x+w,y+h), (255,0,0), 2)
     return frame.tobytes()
@@ -61,7 +61,7 @@ def find_face():
             # Convert to grayscale
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             # Detect the faces
-            tmp_faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+            tmp_faces = face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(30, 30))
     
             for(x, y, w, h) in tmp_faces:
                 if DISPLAY_ON and DISPLAY_COLOR_ON == False:

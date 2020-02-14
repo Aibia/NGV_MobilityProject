@@ -32,6 +32,7 @@ class Camera(object):
     def capture(cls):
         return cls.frame
 
+
     @classmethod
     def _thread(cls):
         with picamera.PiCamera() as camera:
