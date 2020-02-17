@@ -50,7 +50,7 @@ def clova_tts(text:str, client_id:str=CLIENT_ID, client_secret:str=CLIENT_SECRET
         rescode = response.getcode()
         
         if(rescode == 200):
-            logger.log.info("Success clova_tts")
+            logger.log.info("[voice/tts.py:clova_tts] Success clova_tts")
             response_body = response.read()
             if os.path.exists(VOICE_DIR_PATH) == False:
                 os.mkdir(VOICE_DIR_PATH)

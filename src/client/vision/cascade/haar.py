@@ -22,25 +22,26 @@ def get_gray_face(frame:numpy.ndarray)->numpy.ndarray:
     :returns numpy.ndarray:
     """
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30)))
+    faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30))
     if len(faces) > 0:
         for (x, y, w, h) in faces:
             return frame[y:y+h, x:x+w]
     return numpy.ndarray([])
 
 
-def draw_rectangle_on_face(frame:bytes)->bytes:
+def draw_rectangle_on_face(frame):
     """
     
     :param bytes frame:
     :returns bytes:
     """
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    frame = numpy.fromstring(frame, numpy.uint8)
+    #frame = numpy.fromstring(frame, numpy.uint8)
     faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30))
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x,y), (x+w,y+h), (255,0,0), 2)
-    return frame.tobytes()
+    #return frame.tobytes()
+    return frame
 
 
 def find_face()->numpy.ndarray:

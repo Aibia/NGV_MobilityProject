@@ -14,7 +14,7 @@ from client.db import database
 from client import config
 from client.vision import register as vision_register
 from client.vision.cascade import haar
-from client.run import Client
+from client.client import Client
 
 app = Flask(__name__)
 app._static_folder = IMAGES_DIR_PATH
@@ -84,7 +84,7 @@ def register(patient_id):
 def gen(camera):
     while True:
         frame = camera.get_frame()
-        frame = haar.draw_rectangle_on_face(frame)
+        #frame = haar.draw_rectangle_on_face(frame)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
