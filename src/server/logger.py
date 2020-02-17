@@ -38,4 +38,8 @@ class Logger:
         return self.__logger.debug(text)
 
 
+    def error(self, text):
+        return self.__logger.error(text)
+
+
 log = Logger()

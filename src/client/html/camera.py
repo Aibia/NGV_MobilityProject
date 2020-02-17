@@ -5,6 +5,8 @@ import picamera
 
 
 class Camera(object):
+    """
+    """
     thread = None
     frame = None
     last_access = 0
@@ -14,6 +16,7 @@ class Camera(object):
             self.instance = super(Camera, self).__new__(self)
         return self.instance
 
+
     def initialize(self):
         if Camera.thread is None:
             Camera.thread = threading.Thread(target=self._thread)
@@ -21,6 +24,7 @@ class Camera(object):
 
             while self.frame is None:
                 time.sleep(0)
+
 
     def get_frame(self):
         Camera.last_access = time.time()
@@ -37,14 +41,13 @@ class Camera(object):
     def _thread(cls):
         with picamera.PiCamera() as camera:
             camera.resolution = (400, 400)
-            camera.color_effects = (128,128)
             camera.hflip = True
             camera.vflip = False
 
             time.sleep(2)
 
             stream = io.BytesIO()
-            for foo in camera.capture_continuous(stream, 'jpeg',
+            for _ in camera.capture_continuous(stream, 'bgr',
                                                  use_video_port=True):
                 stream.seek(0)
                 cls.frame = stream.read()

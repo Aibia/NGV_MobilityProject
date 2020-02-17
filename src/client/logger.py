@@ -8,6 +8,11 @@ TODAY = datetime.now().strftime('%Y-%m-%d')
 
 
 class Logger:
+    """Logger클래스 
+    로깅을 하기 위한 클래스
+    
+    콘솔과 파일 동시에 로깅한다.
+    """
     def __new__(self):
         if not hasattr(self, 'instance'):
             self.instance = super( Logger, self).__new__(self)
@@ -27,15 +32,41 @@ class Logger:
     
 
     def info(self, text):
+        """기본 로깅 함수
+
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.info(text)
 
 
     def warning(self, text):
+        """경고하기 위한 로깅
+        
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.warning(text)
 
 
     def debug(self, text):
+        """디버깅을 위한 로깅
+        
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.debug(text)
+
+
+    def error(self, text):
+        """에러를 로깅
+        
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
+        return self.__logger.error(text)
+    
+
 
 
 log = Logger()

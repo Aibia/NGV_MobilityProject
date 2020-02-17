@@ -24,6 +24,7 @@ ID_LENGTH = 10
 PATIENT_INFO_CSV_PATH = os.path.join(DB_DIR_PATH, 'patients.csv')
 MEDICINE_INFO_CSV_PATH = os.path.join(DB_DIR_PATH, 'medicine_info.csv')
 
+
 ## SENSOR CONFIG
 SERVO_MIN_ANGLE = 0
 SERVO_MAX_ANGLE = 180

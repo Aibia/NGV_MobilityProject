@@ -11,12 +11,16 @@ YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d')
 
 def find_patient():
+    """
+    
+    :returns:
+    """
     face = haar.find_face()
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer_path = utils.get_latest_yml_path()
-    font = cv2.FONT_HERSHEY_SIMPLEX
     if os.path.exists(recognizer_path) == False:
-        logger.log.debug("Error No Such File : {}".format(recognizer_path))
+        logger.log.error("[vision/recognizer.py:find_patient][E] " + \
+            "No Such File : {}".format(recognizer_path))
         return -1, "-1"
     recognizer.read(recognizer_path)
     if config.DISPLAY_ON:

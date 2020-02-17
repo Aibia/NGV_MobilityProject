@@ -14,33 +14,27 @@ EYE_CASCADE_XML_PATH = os.path.join(HAAR_CASCADE_DIR_PATH, "haarcascade_eye.xml"
 DISPLAY_ON = config.DISPLAY_ON
 DISPLAY_COLOR_ON = config.DISPLAY_COLOR_ON
 
-def save_gray_face(img_path):
-    face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    frame = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    faces = face_cascade.detectMultiScale(
-        frame, 
-        1.3,    # 이미지에서 얼굴 크기가 서로 다른 것을 보상해주는 값
-        5,      # 얼굴 사이의 최소 간격(픽셀)입니다
-        minSize=(30, 30)    # 얼굴의 최소 크기입니다
-    )
-    if len(faces) == 1:
-        for (x, y, w, h) in faces:
-            cv2.imwrite(img_path, frame[y:y+h, x:x+w])
-    else:
-        cv2.imwrite(img_path, frame)
-    return True
 
-
-def get_gray_face(frame):
+def get_gray_face(frame:numpy.ndarray)->numpy.ndarray:
+    """
+    
+    :param numpy.ndarray frame:
+    :returns numpy.ndarray:
+    """
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
     faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30)))
     if len(faces) > 0:
         for (x, y, w, h) in faces:
             return frame[y:y+h, x:x+w]
-    return []
+    return numpy.ndarray([])
 
 
-def draw_gray_face(frame):
+def draw_rectangle_on_face(frame:bytes)->bytes:
+    """
+    
+    :param bytes frame:
+    :returns bytes:
+    """
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
     frame = numpy.fromstring(frame, numpy.uint8)
     faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30))
@@ -49,7 +43,11 @@ def draw_gray_face(frame):
     return frame.tobytes()
 
 
-def find_face():
+def find_face()->numpy.ndarray:
+    """
+
+    :returns numpy.ndarray:
+    """
     try:
         img = []
         face = []
@@ -80,8 +78,8 @@ def find_face():
         if DISPLAY_ON:
             cv2.destroyAllWindows()
     except Exception as e:
-        logger.log.debug("Error " + str(e))
-        return []
+        logger.log.error("[vision/cascade/haar.py:find_face][E] {}".format(e))
+        return numpy.adarray([])
     else:
         return face
 

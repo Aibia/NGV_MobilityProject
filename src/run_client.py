@@ -26,7 +26,7 @@ class Client:
 
     def __webserver__(self):
         if self.__web_server_proc.is_alive():
-            logger.log.info("Error Client is running")
+            logger.log.error("[run_client.py:__webserver__][E] Client is running")
             return False
 
         with Board() as board:
@@ -38,7 +38,7 @@ class Client:
 
     def __nasa__(self): 
         if self.__nasa_proc.is_alive():
-            logger.log.info("Error Client is already running")
+            logger.log.error("[run_client.py:__nasa__][E] Client is already running")
             return False
 
         logger.log.info("Start running client app")
@@ -55,14 +55,14 @@ class Client:
                 ret = request.gpio_pin_change_out()
                 time.sleep(10)
                 if ret["status"] == False:
-                    logger.log.debug("Error Can't Stop Running")
+                    logger.log.error("[run_client.py:__nasa__][E] Can't Stop Running")
                     request.gpio_pin_change_in()
                     continue
                 # 환자 정보 갖고오기 
                 patient_info = database.get_patient_info(patient_id)
                 medicine_info = database.get_medicine_info(patient_id)
                 if patient_info['name'] == "":
-                    logger.log.debug("No Patient Found {}".format(patient_id))
+                    logger.log.error("[run_client.py:__nasa__][E] No Patient Found {}".format(patient_id))
                     time.sleep(3)
                     request.gpio_pin_change_in()
                     continue
@@ -75,7 +75,7 @@ class Client:
                 time.sleep(3)
                 request.gpio_pin_change_in()
             except Exception as e:
-                logger.log.debug("{}".format(e))
+                logger.log.error("[run_client.py:__nasa__][E] {}".format(e))
 
 
     def is_alive(self):
