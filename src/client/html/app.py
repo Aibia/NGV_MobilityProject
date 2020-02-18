@@ -2,27 +2,27 @@ import os
 import cv2
 import sys
 from flask import Flask, render_template, Response, redirect, request, url_for, make_response
-from camera import Camera
-
-CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
-IMAGES_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'static')
-if os.path.exists(IMAGES_DIR_PATH) == False:
-    os.mkdir(IMAGES_DIR_PATH)
-ROOT_DIR_PATH = os.path.dirname(os.path.dirname(CURRENT_DIR_PATH))
-sys.path.append(ROOT_DIR_PATH)
+from client.html.camera import Camera
 from client.db import database
 from client import config
 from client.vision import register as vision_register
 from client.vision.cascade import haar
 from client.client import Client
 
+CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
+IMAGES_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'static')
+if os.path.exists(IMAGES_DIR_PATH) == False:
+    os.mkdir(IMAGES_DIR_PATH)
+
+
 app = Flask(__name__)
 app._static_folder = IMAGES_DIR_PATH
 
+
 @app.route('/')
 def index():
-    if Client().is_car_running():
-        return render_template('index.html', patient_id='-1', error="Error NASA Is moving")
+    if Client().is_nasa_running():
+        return render_template('index.html', patient_id='-1', error="Wait! NASA Is moving")
     new_patient_id = database.create_new_id()
     return render_template('index.html', patient_id=new_patient_id, error="")
 
@@ -30,7 +30,7 @@ def index():
 @app.route('/register/<patient_id>', methods=['GET', 'POST'])
 def register(patient_id):
     error=""
-    if Client().is_car_running():
+    if Client().is_nasa_running():
         return redirect(url_for('index'))
 
     if request.method =="POST":
@@ -91,7 +91,7 @@ def gen(camera):
 
 @app.route('/video_feed')
 def video_feed():
-    if Client().is_car_running():
+    if Client().is_nasa_running():
         return redirect(url_for('index'))
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -99,7 +99,7 @@ def video_feed():
 
 @app.route('/capture/<patient_id>')
 def capture(patient_id):
-    if Client().is_car_running():
+    if Client().is_nasa_running():
         return redirect(url_for('index'))
     captured_img = Camera.capture()
     file_name = '{}.jpg'.format(database.create_random_string(config.TEMP_IMAGE_FILE_NAME_LENGTH))
@@ -115,7 +115,6 @@ def capture(patient_id):
     return os.path.join(os.path.join('/static', patient_id), file_name)
 
 
+    
 
 
-if __name__ == "__main__":
-    app.run(host=config.HOST_IP_ADDR, debug=False, threaded=True)
