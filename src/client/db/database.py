@@ -108,7 +108,7 @@ def save_patient_info(patient_id:str, patient_info:dict)->bool:
 
     :param str patient_id: 저장하고자 하는 환자의 아이디
     :param dict patient_info: 환자 정보
-    :returns: bool 타입의 실행 결과
+    :returns bool: bool 타입의 실행 결과
     """
     try:
         field_names = PATINET_INFO_FIELD_NAMES
@@ -156,7 +156,7 @@ def delete_patient_info(patient_id:str)->bool:
     """데이터베이스에서 환자 정보 삭제
 
     :param str patient_id: 삭제하고자 하는 환자의 아이디
-    :returns: bool타입의 함수 실행 결과
+    :returns bool: bool타입의 함수 실행 결과
     """
     try:
         field_names = PATINET_INFO_FIELD_NAMES
@@ -184,7 +184,7 @@ def delete_medicine_info(patient_id:str)->bool:
     """데이터베이스에서 환자 약 정보 삭제
 
     :param str patient_id: 삭제하고자 하는 환자의 아이디
-    :returns: bool타입의 함수 실행 결과
+    :returns bool: bool타입의 함수 실행 결과
     """
     try:
         field_names = MEDICINE_INFO_FIELD_NAMES

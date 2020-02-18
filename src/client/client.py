@@ -42,7 +42,7 @@ class Client:
         #    return False
 
         logger.log.info("[run_client.py:__nasa__] Start running client app")
-        if request.get_gpio_pin_function()["result"] == "out":
+        if request.get_gpio_pin_function() == "out":
             logger.log.info("[run_client.py:__nasa__] Car Runnin")
             request.gpio_pin_change_in()
             
@@ -57,7 +57,7 @@ class Client:
                 logger.log.info("[run_client.py:__nasa__] Stop running ...")
                 ret = request.gpio_pin_change_out()
                 time.sleep(3)
-                if ret["result"] == False:
+                if ret == False:
                     logger.log.error("[run_client.py:__nasa__][E] Can't Stop Running")
                     request.gpio_pin_change_in()
                     continue
@@ -86,7 +86,7 @@ class Client:
 
     
     def is_car_running(self):
-        if request.get_gpio_pin_function()["result"] == "out":
+        if request.get_gpio_pin_function() == "out":
             return False
         return True
 

@@ -13,7 +13,7 @@ YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d') 
 
 
-def train_recognizer(datasets, recognizer_path=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), old_recognizer=True):
+def train_recognizer(datasets:dict, recognizer_path:str=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), old_recognizer:bool=True):
     """데이터를 바탕으로 얼굴 정보를 학습시킨다. 
     학습된 YML파일은 recognizer_path에 저장되며 OLD_RECOGNIZER에 따라 이전 파일에 추가할 수 있다.
 

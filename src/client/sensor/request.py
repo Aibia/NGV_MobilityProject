@@ -1,6 +1,6 @@
 import requests
 import json
-from client import config
+from client import config, logger
 
 
 SERVER_IP_ADDR = config.SERVER_IP_ADDR
@@ -8,11 +8,11 @@ SERVER_PORT = config.SERVER_PORT
 MOTOR_STOP_PIN_NUM = config.MOTOR_STOP_PIN_NUM
 
 
-def gpio_pin_change_out()->dict:
-    """모터를 멈추기 위해 서버측 GPIO 핀을 OUT으로 바꿈 
+def gpio_pin_change_out()->bool:
+    """모터를 제어하는 서버측 GPIO 핀을 OUT으로 바꿈 
     설정은 config파일에서 할 수 있음 [SERVER_IP_ADDR, SERVER_PORT, MOTOR_STOP_PIN_NUM]
 
-    :returns: 서버에 요청 결과 
+    :returns bool: 서버에 요청 결과 
     """
     url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
 
@@ -23,14 +23,18 @@ def gpio_pin_change_out()->dict:
         "jsonrpc": "2.0",
         "id": 0,
     }
-    return requests.post(url, json=payload).json()
+    result = requests.post(url, json=payload).json()
+    if "error" in result.keys():
+        logger.log.error("[sensor/request.py:gpio_pin_change_out] {}".format(result["error"]))
+        return False
+    return result["result"]
 
 
-def gpio_pin_change_in()->dict:
-    """모터를 다시 작동시키기 위해 서버측 GPIO 핀을 IN으로 바꿈 
+def gpio_pin_change_in()->bool:
+    """모터를 제어하는 서버측 GPIO 핀을 IN으로 바꿈 
     설정은 config파일에서 할 수 있음 [SERVER_IP_ADDR, SERVER_PORT, MOTOR_STOP_PIN_NUM]
 
-    :returns: 서버에 요청 결과 
+    :returns bool: 서버에 요청 결과 
     """
     url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
 
@@ -41,13 +45,17 @@ def gpio_pin_change_in()->dict:
         "jsonrpc": "2.0",
         "id": 0,
     }
-    return requests.post(url, json=payload).json()
+    result = requests.post(url, json=payload).json()
+    if "error" in result.keys():
+        logger.log.error("[sensor/request.py:gpio_pin_change_in] {}".format(result["error"]))
+        return False
+    return result["result"]
 
 
-def get_gpio_pin_function()->dict:
-    """
+def get_gpio_pin_function()->str:
+    """모터를 제어하는 서버측 GPIO 핀의 설정 값을 갖고옴
 
-    :returns: 서버에 요청 결과 
+    :returns str: 서버에 요청 결과 (out, in, 빈스트링 3가지)
     """
     url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
 
@@ -58,6 +66,10 @@ def get_gpio_pin_function()->dict:
         "jsonrpc": "2.0",
         "id": 0,
     }
-    return requests.post(url, json=payload).json()
+    result = requests.post(url, json=payload).json()
+    if "error" in result.keys():
+        logger.log.error("[sensor/request.py:get_gpio_pin_function] {}".format(result["error"]))
+        return ""
+    return result["result"]
 
 
