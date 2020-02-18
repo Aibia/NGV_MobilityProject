@@ -21,7 +21,7 @@ app._static_folder = IMAGES_DIR_PATH
 
 @app.route('/')
 def index():
-    if Client().is_alive():
+    if Client().is_car_running():
         return render_template('index.html', patient_id='-1', error="Error NASA Is moving")
     new_patient_id = database.create_new_id()
     return render_template('index.html', patient_id=new_patient_id, error="")
@@ -30,7 +30,7 @@ def index():
 @app.route('/register/<patient_id>', methods=['GET', 'POST'])
 def register(patient_id):
     error=""
-    if Client().is_alive():
+    if Client().is_car_running():
         return redirect(url_for('index'))
 
     if request.method =="POST":
@@ -91,7 +91,7 @@ def gen(camera):
 
 @app.route('/video_feed')
 def video_feed():
-    if Client().is_alive():
+    if Client().is_car_running():
         return redirect(url_for('index'))
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -99,7 +99,7 @@ def video_feed():
 
 @app.route('/capture/<patient_id>')
 def capture(patient_id):
-    if Client().is_alive():
+    if Client().is_car_running():
         return redirect(url_for('index'))
     captured_img = Camera.capture()
     file_name = '{}.jpg'.format(database.create_random_string(config.TEMP_IMAGE_FILE_NAME_LENGTH))

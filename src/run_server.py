@@ -2,7 +2,7 @@ import signal
 from multiprocessing import Process
 from server import drive as car
 from server import sensor_server
-from sensor import logger, config
+from server import logger, config
 
 
 class Server:

@@ -10,10 +10,10 @@ CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d')
 
-def find_patient():
+def find_patient()->str:
     """
     
-    :returns:
+    :returns str:
     """
     face = haar.find_face()
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -27,5 +27,10 @@ def find_patient():
         cv2.imshow('face', face)
         time.sleep(1)
     cv2.destroyAllWindows()
-    id, confidence = recognizer.predict(face)
-    return id, "{}".format(round(100-confidence))
+    id_, confidence = recognizer.predict(face)
+    confidence = round(100-confidence)
+    logger.log.info("[vision/recognizer.py:find_patient] " + \
+        "** id : {}\tconfidence : {}".format(id_, confidence))
+    if confidence < 0:
+        return ""
+    return id_

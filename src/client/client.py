@@ -23,6 +23,7 @@ class Client:
 
 
     def __webserver__(self):
+        # TODO
         #if self.__web_server_proc.is_alive():
         #    logger.log.error("[run_client.py:__webserver__][E] Client is running")
         #    return False
@@ -35,24 +36,28 @@ class Client:
 
 
     def __nasa__(self): 
+        # TODO
         #if self.__nasa_proc.is_alive():
         #    logger.log.error("[run_client.py:__nasa__][E] Client is already running")
         #    return False
 
         logger.log.info("[run_client.py:__nasa__] Start running client app")
-
+        if request.get_gpio_pin_function()["result"] == "out":
+            logger.log.info("[run_client.py:__nasa__] Car Runnin")
+            request.gpio_pin_change_in()
+            
         while True:
             try:
                 # 환자 얼굴 찾기
-                patient_id, confidence = recognizer.find_patient()
-                if patient_id == -1:
+                patient_id = recognizer.find_patient()
+                if patient_id == "":
                     continue
-                logger.log.info("[run_client.py:__nasa__] Patient found patient_id : {} confidence : {}".format(patient_id, confidence))
+                logger.log.info("[run_client.py:__nasa__] Patient Found patient_id : {}".format(patient_id))
                 # 주행 멈추기 
                 logger.log.info("[run_client.py:__nasa__] Stop running ...")
                 ret = request.gpio_pin_change_out()
-                time.sleep(10)
-                if ret["status"] == False:
+                time.sleep(3)
+                if ret["result"] == False:
                     logger.log.error("[run_client.py:__nasa__][E] Can't Stop Running")
                     request.gpio_pin_change_in()
                     continue
@@ -78,6 +83,12 @@ class Client:
 
     def is_alive(self):
         return self.__nasa_proc.is_alive()
+
+    
+    def is_car_running(self):
+        if request.get_gpio_pin_function()["result"] == "out":
+            return False
+        return True
 
     
     def start(self):

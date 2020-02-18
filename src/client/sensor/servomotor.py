@@ -9,19 +9,9 @@ SERVO_MAX_ANGLE = config.SERVO_MAX_ANGLE
 MIN_PULSE_WIDTH = config.MIN_PULSE_WIDTH
 MAX_PULSE_WIDTH = config.MAX_PULSE_WIDTH
 
-motor_pin_info = {
-    #motor_name : motor_pin_num
-    "medicine1" : AngularServo(PIN_A, min_angle=SERVO_MIN_ANGLE, \
-        max_angle=SERVO_MAX_ANGLE, min_pulse_width=MIN_PULSE_WIDTH, max_pulse_width=MAX_PULSE_WIDTH),
-    "medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, \
-        max_angle=SERVO_MAX_ANGLE, min_pulse_width=MIN_PULSE_WIDTH, max_pulse_width=MAX_PULSE_WIDTH),
-    "medicine3" : AngularServo(PIN_C, min_angle=SERVO_MAX_ANGLE, \
-        max_angle=SERVO_MIN_ANGLE, min_pulse_width=MIN_PULSE_WIDTH, max_pulse_width=MAX_PULSE_WIDTH)
-}
-
 def medicine_out(medicine_info:dict)->bool:
     """약 정보(medicine_info)에 맞는 약을 배출 
-
+    
     :param dict medicine_info: 약이름과 섭취해야하는 약의 개수가 담겨있다. 
     :returns bool: bool형의 함수 실행결과
     """
@@ -44,6 +34,16 @@ def control_servo_motor(medicine_name:str, times:int)->bool:
     :param int times: 약 배출 횟수
     :returns bool: bool형의 함수 실행 결과 
     """
+    motor_pin_info = {
+        #motor_name : motor_pin_num
+        "medicine1" : AngularServo(PIN_A, min_angle=SERVO_MIN_ANGLE, \
+            max_angle=SERVO_MAX_ANGLE, min_pulse_width=MIN_PULSE_WIDTH, max_pulse_width=MAX_PULSE_WIDTH),
+        "medicine2" : AngularServo(PIN_B, min_angle=SERVO_MIN_ANGLE, \
+            max_angle=SERVO_MAX_ANGLE, min_pulse_width=MIN_PULSE_WIDTH, max_pulse_width=MAX_PULSE_WIDTH),
+        "medicine3" : AngularServo(PIN_C, min_angle=SERVO_MAX_ANGLE, \
+            max_angle=SERVO_MIN_ANGLE, min_pulse_width=MIN_PULSE_WIDTH, max_pulse_width=MAX_PULSE_WIDTH)
+    }
+    
     if medicine_name not in motor_pin_info.keys():
         return False
 

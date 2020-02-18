@@ -44,3 +44,20 @@ def gpio_pin_change_in()->dict:
     return requests.post(url, json=payload).json()
 
 
+def get_gpio_pin_function()->dict:
+    """
+
+    :returns: 서버에 요청 결과 
+    """
+    url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
+
+    # Example echo method
+    payload = {
+        "method": "get_gpio_pin_function",
+        "params": [MOTOR_STOP_PIN_NUM],
+        "jsonrpc": "2.0",
+        "id": 0,
+    }
+    return requests.post(url, json=payload).json()
+
+

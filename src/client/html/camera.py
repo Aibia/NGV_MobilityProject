@@ -1,6 +1,8 @@
 import time
 import threading
 import cv2
+import numpy
+import io
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
@@ -46,18 +48,17 @@ class Camera(object):
 
             time.sleep(2)
 
-            stream = PiRGBArray(camera, size=(400, 400))
-            for frame in camera.capture_continuous(stream, 'bgr',
+            stream = io.BytesIO()
+            for _ in camera.capture_continuous(stream, 'jpeg',
                                                  use_video_port=True):
-                
-                img = frame.array
-                #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                #gray = cv2.equalizeHist(gray)
-                
-                vis = img.copy()
-                cls.frame = vis.tobytes()
+                stream.seek(0)
+                _stream = stream.read()
+                data = numpy.fromstring(_stream, dtype=numpy.uint8)
+                img = cv2.imdecode(data, 1)
+                cls.frame = img.tobytes()
 
-                stream.truncate(0)
+                stream.seek(0)
+                stream.truncate()
 
                 if time.time() - cls.last_access > 10:
                     break
