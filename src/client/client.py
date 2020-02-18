@@ -25,6 +25,7 @@ class Client:
 
 
     def __webserver__(self):
+        ## TODO STDOUT -> LOGGING
         with Board() as board:
             board.led.state = Led.ON
             app.run(host=config.HOST_IP_ADDR, debug=False, threaded=True)

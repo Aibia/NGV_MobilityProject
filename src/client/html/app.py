@@ -7,7 +7,6 @@ from client.html.camera import Camera
 from client.db import database
 from client import config
 from client.vision import register as vision_register
-from client.vision.cascade import haar
 from client.client import Client
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -79,15 +78,12 @@ def register(patient_id):
 def gen(camera):
     while True:
         frame = camera.get_frame()
-        #frame = haar.draw_rectangle_on_face(frame)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/video_feed')
 def video_feed():
-    if Client().is_nasa_running():
-        return redirect(url_for('index'))
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 

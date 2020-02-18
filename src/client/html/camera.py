@@ -4,8 +4,9 @@ import threading
 import cv2
 import numpy
 import io
-from picamera import PiCamera
-from picamera.array import PiRGBArray
+import picamera
+from PIL import Image
+from client.vision.cascade import haar
 
 class Camera(object):
     """
@@ -42,21 +43,21 @@ class Camera(object):
 
     @classmethod
     def _thread(cls):
-        with PiCamera() as camera:
+        with picamera.PiCamera() as camera:
             camera.resolution = (400, 400)
             camera.hflip = True
             camera.vflip = False
 
-            time.sleep(2)
+            time.sleep(1.5)
 
             stream = io.BytesIO()
             for _ in camera.capture_continuous(stream, 'jpeg',
                                                  use_video_port=True):
+
                 stream.seek(0)
                 _stream = stream.read()
-                data = numpy.fromstring(_stream, dtype=numpy.uint8)
-                img = cv2.imdecode(data, 1)
-                cls.frame = img.tobytes()
+                image = haar.draw_rectangle_on_face(Image.open(_stream))
+                cls.frame = image.tobytes()
 
                 stream.seek(0)
                 stream.truncate()
@@ -64,3 +65,5 @@ class Camera(object):
                 if time.time() - cls.last_access > 10:
                     break
         cls.thread = None
+
+
