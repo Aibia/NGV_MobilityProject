@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 import os
 import time
 from multiprocessing import Process
@@ -34,7 +35,7 @@ class Client:
     def __nasa__(self): 
         logger.log.info("[run_client.py:__nasa__] Start running client app")
         if request.get_gpio_pin_function() == "out":
-            logger.log.info("[run_client.py:__nasa__] Car Runnin")
+            logger.log.info("[run_client.py:__nasa__] Start Car Running")
             request.gpio_pin_change_in()
             
         while True:
@@ -106,6 +107,7 @@ class Client:
             logger.log.info("[run_client.py:stop] Web Server Stopped!")
             with Board() as board:
                 board.led.state = Led.OFF
+
         if self.__nasa_proc.is_alive():
             self.__nasa_proc.terminate()
             logger.log.info("[run_client.py:stop] NASA App Stopped!")

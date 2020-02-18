@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 import signal
 from client.client import Client
         

@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 from aiy.pins import PIN_A, PIN_B, PIN_C
 from gpiozero import AngularServo
 from client import config, logger

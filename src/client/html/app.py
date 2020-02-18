@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 import os
 import cv2
 import sys
@@ -13,7 +14,6 @@ CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 IMAGES_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'static')
 if os.path.exists(IMAGES_DIR_PATH) == False:
     os.mkdir(IMAGES_DIR_PATH)
-
 
 app = Flask(__name__)
 app._static_folder = IMAGES_DIR_PATH
@@ -43,15 +43,10 @@ def register(patient_id):
         if name == "" or age == "" or medicine1 =="" or medicine2=="" or medicine3=="":
             error = "Error! Blank Found"
             return make_response(render_template('register.html', patient_id=patient_id, error=error))
-        else:
-            try:
-                int(age)
-                int(medicine1)
-                int(medicine2)
-                int(medicine3)
-            except Exception as e:
-                error = "Error! int : age, medicine1, medicine2, medicine3 "
-                return make_response(render_template('register.html', patient_id=patient_id, error=error))
+        elif age.isdigit() == False or medicine1.isdigit() == False or \
+            medicine2.isdigit() == False or medicine3.isdigit() == False:
+            error = "Error! int : age, medicine1, medicine2, medicine3 "
+            return make_response(render_template('register.html', patient_id=patient_id, error=error))
         patient_info = {
             "id" : patient_id,
             "name" : name,
@@ -113,8 +108,3 @@ def capture(patient_id):
     with open(file_path, 'wb') as fd:
         fd.write(captured_img)
     return os.path.join(os.path.join('/static', patient_id), file_name)
-
-
-    
-
-

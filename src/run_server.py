@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 import signal
 from multiprocessing import Process
 from server import drive as car
@@ -21,7 +22,7 @@ class Server:
         logger.log.info("Start server ... ")
         if self.server_process.is_alive() == False:
             self.server_process.start()
-        if self.drive_process.is_alive():
+        if self.drive_process.is_alive() == False:
             self.drive_process.start()
         return True
     

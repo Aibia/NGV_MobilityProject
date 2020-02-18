@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 import os
 import cv2
 import time
@@ -34,4 +35,4 @@ def find_patient()->str:
         "** id : {}\tconfidence : {}".format(id_, confidence))
     if confidence < 0:
         return ""
-    return id_
+    return str(id_)

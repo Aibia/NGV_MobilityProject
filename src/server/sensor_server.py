@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 from jsonrpc import JSONRPCResponseManager, dispatcher

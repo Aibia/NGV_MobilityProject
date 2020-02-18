@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 import os
 import logging
 from datetime import datetime
@@ -66,7 +67,5 @@ class Logger:
         """
         return self.__logger.error(text)
     
-
-
-
+    
 log = Logger()
