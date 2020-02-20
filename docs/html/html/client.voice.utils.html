@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>client.voice.utils module &#8212; ngv  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="client.client module" href="client.client.html" />
+    <link rel="prev" title="client.voice.tts module" href="client.voice.tts.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-client.voice.utils">
+<span id="client-voice-utils-module"></span><h1>client.voice.utils module<a class="headerlink" href="#module-client.voice.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="client.voice.utils.play_mp3">
+<code class="sig-prename descclassname">client.voice.utils.</code><code class="sig-name descname">play_mp3</code><span class="sig-paren">(</span><em class="sig-param">file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client/voice/utils.html#play_mp3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#client.voice.utils.play_mp3" title="Permalink to this definition">¶</a></dt>
+<dd><p>mp3형식의 오디오 파일을 mpg123를 이용해 실행한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – 오디오 파일의 경로</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool타입의 함수 실행 결과</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="client.voice.utils.randome_file_name">
+<code class="sig-prename descclassname">client.voice.utils.</code><code class="sig-name descname">randome_file_name</code><span class="sig-paren">(</span><em class="sig-param">length</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client/voice/utils.html#randome_file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#client.voice.utils.randome_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>랜덤 문자열인 파일 이름을 생성한다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<em>int</em>) – 파일 이름 길이</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>랜덤 문자열 파일 이름</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="client.voice.utils.voice_recoder">
+<code class="sig-prename descclassname">client.voice.utils.</code><code class="sig-name descname">voice_recoder</code><span class="sig-paren">(</span><em class="sig-param">file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/client/voice/utils.html#voice_recoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#client.voice.utils.voice_recoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>voices 폴더에 file_name으로 음성 파일을 녹음해 저장한다. 버튼을 누르면 음성 녹음이 종료된다.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – 음성 파일을 저장할 파일 이름</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>음성 파일의 절대 경로, 실행 실패시 빈 문자열을 리턴한다.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ngv</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="client.html">client package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="client.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="client.db.html">client.db package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html.html">client.html package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.sensor.html">client.sensor package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.vision.html">client.vision package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="client.voice.html">client.voice package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="client.voice.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="client.voice.html#module-client.voice">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#module-client">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">server package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="client.html">client package</a><ul>
+  <li><a href="client.voice.html">client.voice package</a><ul>
+      <li>Previous: <a href="client.voice.tts.html" title="previous chapter">client.voice.tts module</a></li>
+      <li>Next: <a href="client.client.html" title="next chapter">client.client module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/client.voice.utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

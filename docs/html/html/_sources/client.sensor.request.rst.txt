@@ -1,0 +1,7 @@
+client.sensor.request module
+============================
+
+.. automodule:: client.sensor.request
+   :members:
+   :undoc-members:
+   :show-inheritance:

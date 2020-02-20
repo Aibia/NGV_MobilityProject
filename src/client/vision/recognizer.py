@@ -34,5 +34,5 @@ def find_patient()->str:
     logger.log.info("[vision/recognizer.py:find_patient] " + \
         "** id : {}\tconfidence : {}".format(id_, confidence))
     if confidence < 0:
-        return ""
+        return "-1"
     return str(id_)

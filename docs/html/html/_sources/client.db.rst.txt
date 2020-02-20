@@ -1,0 +1,17 @@
+client.db package
+=================
+
+Submodules
+----------
+
+.. toctree::
+
+   client.db.database
+
+Module contents
+---------------
+
+.. automodule:: client.db
+   :members:
+   :undoc-members:
+   :show-inheritance:

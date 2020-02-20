@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>client.voice.tts &#8212; ngv  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for client.voice.tts</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-*- coding:utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">from</span> <span class="nn">aiy.board</span> <span class="kn">import</span> <span class="n">Board</span>
+<span class="kn">import</span> <span class="nn">aiy.voice.tts</span>
+<span class="kn">from</span> <span class="nn">client</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">client.voice</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">CLIENT_ID</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CLIENT_ID</span>
+<span class="n">CLIENT_SECRET</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CLIENT_SERVER_X_NCP_APIGW_API_KEY</span>
+<span class="n">LANGUAGE</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">LANGUAGE</span>
+<span class="n">VOICE_DIR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">VOICE_DIR_PATH</span><span class="p">,</span> <span class="s1">&#39;voices&#39;</span><span class="p">)</span>
+<span class="n">TTS_FILE_NAME_LENGTH</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">TTS_FILE_NAME_LENGTH</span>
+
+<div class="viewcode-block" id="say"><a class="viewcode-back" href="../../../client.voice.tts.html#client.voice.tts.say">[docs]</a><span class="k">def</span> <span class="nf">say</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;AIY에서 제공하는 기본 TTS</span>
+<span class="sd">    </span>
+<span class="sd">    :param str text: 말하고자 하는 문자</span>
+<span class="sd">    :returns: bool타입의 함수 실행 결과</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">Board</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>
+            <span class="n">aiy</span><span class="o">.</span><span class="n">voice</span><span class="o">.</span><span class="n">tts</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[client/voice/tts.py:say][E] </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="clova_tts"><a class="viewcode-back" href="../../../client.voice.tts.html#client.voice.tts.clova_tts">[docs]</a><span class="k">def</span> <span class="nf">clova_tts</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="n">CLIENT_ID</span><span class="p">,</span> <span class="n">client_secret</span><span class="o">=</span><span class="n">CLIENT_SECRET</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">LANGUAGE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;네이버 클라우드 서비스를 이용한 TTS 함수 </span>
+<span class="sd">    voices폴더 아래에 랜덤 파일이름으로 다운받은 음성(mp3)을 저장하고 음성 파일을 실행한다.</span>
+<span class="sd">    API : https://apidocs.ncloud.com/ko/ai-naver/clova_speech_synthesis/tts/</span>
+<span class="sd">    price : 4won/15sec </span>
+
+<span class="sd">    :param str text: 말하고자 하는 문자</span>
+<span class="sd">    :param str client_id: 클로바 TTS 사용에 필요한 client_id (default값은 config에 저장 가능)</span>
+<span class="sd">    :param str client_secret: 클로바 TTS 사용에 필요한 client_secret (default값은 config에 저장 가능)</span>
+<span class="sd">    :param str lang: 사용할 언어 ( Kor, Jpn, Eng, Chn ) (default값은 config에 저장 가능)</span>
+<span class="sd">    :returns: bool타입의 함수 실행 결과</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://naveropenapi.apigw.ntruss.com/voice/v1/tts&quot;</span>
+        <span class="n">encText</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;speaker=mijin&amp;speed=0&amp;text=&quot;</span> <span class="o">+</span> <span class="n">encText</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">&quot;X-NCP-APIGW-API-KEY-ID&quot;</span><span class="p">,</span><span class="n">client_id</span><span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">&quot;X-NCP-APIGW-API-KEY&quot;</span><span class="p">,</span><span class="n">client_secret</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">rescode</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">getcode</span><span class="p">()</span>
+        
+        <span class="k">if</span><span class="p">(</span><span class="n">rescode</span> <span class="o">==</span> <span class="mi">200</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[voice/tts.py:clova_tts] Success clova_tts&quot;</span><span class="p">)</span>
+            <span class="n">response_body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">VOICE_DIR_PATH</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">VOICE_DIR_PATH</span><span class="p">)</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VOICE_DIR_PATH</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">randome_file_name</span><span class="p">(</span><span class="n">TTS_FILE_NAME_LENGTH</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.mp3&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[voice/tts.py:clova_tts] TTS Voice File Saved to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">play_mp3</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[voice/tts.py:clova_tts][E] </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[voice/tts.py:clova_tts][E] clova_tts rescode </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rescode</span><span class="p">))</span> 
+        <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">ngv</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../client.html">client package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server.html">server package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

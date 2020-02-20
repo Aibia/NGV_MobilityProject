@@ -1,0 +1,7 @@
+client.vision.recognizer module
+===============================
+
+.. automodule:: client.vision.recognizer
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+client.vision.register module
+=============================
+
+.. automodule:: client.vision.register
+   :members:
+   :undoc-members:
+   :show-inheritance:

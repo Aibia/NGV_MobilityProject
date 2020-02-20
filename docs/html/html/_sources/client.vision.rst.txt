@@ -1,0 +1,26 @@
+client.vision package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+
+   client.vision.cascade
+
+Submodules
+----------
+
+.. toctree::
+
+   client.vision.recognizer
+   client.vision.register
+   client.vision.utils
+
+Module contents
+---------------
+
+.. automodule:: client.vision
+   :members:
+   :undoc-members:
+   :show-inheritance:

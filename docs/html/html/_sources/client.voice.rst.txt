@@ -1,0 +1,19 @@
+client.voice package
+====================
+
+Submodules
+----------
+
+.. toctree::
+
+   client.voice.stt
+   client.voice.tts
+   client.voice.utils
+
+Module contents
+---------------
+
+.. automodule:: client.voice
+   :members:
+   :undoc-members:
+   :show-inheritance:

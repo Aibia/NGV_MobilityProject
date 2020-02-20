@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>client.client &#8212; ngv  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for client.client</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-*- coding:utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+<span class="kn">from</span> <span class="nn">aiy.board</span> <span class="kn">import</span> <span class="n">Board</span><span class="p">,</span> <span class="n">Led</span>
+<span class="kn">from</span> <span class="nn">client.db</span> <span class="kn">import</span> <span class="n">database</span>
+<span class="kn">from</span> <span class="nn">client.vision</span> <span class="kn">import</span> <span class="n">recognizer</span>
+<span class="kn">from</span> <span class="nn">client.sensor</span> <span class="kn">import</span> <span class="n">servomotor</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">client.voice</span> <span class="kn">import</span> <span class="n">tts</span><span class="p">,</span> <span class="n">stt</span>
+<span class="kn">from</span> <span class="nn">client.html.app</span> <span class="kn">import</span> <span class="n">app</span>
+<span class="kn">from</span> <span class="nn">client</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">config</span>
+
+
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../client.client.html#client.client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;instance&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span> <span class="n">Client</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__webserver__</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__nasa_proc</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__nasa__</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__webserver__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">## TODO STDOUT -&gt; LOGGING</span>
+        <span class="k">with</span> <span class="n">Board</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Led</span><span class="o">.</span><span class="n">ON</span>
+            <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">HOST_IP_ADDR</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Led</span><span class="o">.</span><span class="n">OFF</span>
+        <span class="k">return</span> <span class="kc">True</span> 
+
+
+    <span class="k">def</span> <span class="nf">__nasa__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__] Start running client app&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">get_gpio_pin_function</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;out&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__] Start Car Running&quot;</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">gpio_pin_change_in</span><span class="p">()</span>
+            
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># 환자 얼굴 찾기</span>
+                <span class="n">patient_id</span> <span class="o">=</span> <span class="n">recognizer</span><span class="o">.</span><span class="n">find_patient</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">patient_id</span> <span class="o">==</span> <span class="s2">&quot;-1&quot;</span> <span class="ow">or</span> <span class="n">database</span><span class="o">.</span><span class="n">has_patient_id</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__] Patient Found patient_id : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">patient_id</span><span class="p">))</span>
+                <span class="c1"># 주행 멈추기 </span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__] Stop running ...&quot;</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">gpio_pin_change_out</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__][E] Can&#39;t Stop Running&quot;</span><span class="p">)</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">gpio_pin_change_in</span><span class="p">()</span>
+                    <span class="k">continue</span>
+                <span class="c1"># 환자 정보 갖고오기 </span>
+                <span class="n">patient_info</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">get_patient_info</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="n">medicine_info</span> <span class="o">=</span> <span class="n">database</span><span class="o">.</span><span class="n">get_medicine_info</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">patient_info</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__][E] No Patient Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">patient_id</span><span class="p">))</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">gpio_pin_change_in</span><span class="p">()</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">CLOUD_TTS_ON</span><span class="p">:</span>
+                    <span class="n">tts</span><span class="o">.</span><span class="n">clova_tts</span><span class="p">(</span><span class="s2">&quot;안녕하세요 </span><span class="si">{}</span><span class="s2">님&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">patient_info</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tts</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s2">&quot;안녕하세요 </span><span class="si">{}</span><span class="s2">님&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">patient_info</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+                <span class="c1"># 약 배출 </span>
+                <span class="n">servomotor</span><span class="o">.</span><span class="n">medicine_out</span><span class="p">(</span><span class="n">medicine_info</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">gpio_pin_change_in</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[run_client.py:__nasa__][E] </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Client.is_web_running"><a class="viewcode-back" href="../../client.client.html#client.client.Client.is_web_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_web_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="Client.is_nasa_running"><a class="viewcode-back" href="../../client.client.html#client.client.Client.is_nasa_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_nasa_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">get_gpio_pin_function</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;out&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    
+<div class="viewcode-block" id="Client.start"><a class="viewcode-back" href="../../client.client.html#client.client.Client.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">is_webserver_up</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+            
+        <span class="n">web_server_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+        <span class="n">nasa_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nasa_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">web_server_flag</span> <span class="ow">and</span> <span class="n">nasa_flag</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;[client.py:start] Web Server And NASA Already Running&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">web_server_flag</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">nasa_flag</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nasa_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">web_server_flag</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;[client.py:start] Web Server Already Running&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">nasa_flag</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;[client.py:start] NASA Already Running&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nasa_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Client.stop"><a class="viewcode-back" href="../../client.client.html#client.client.Client.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__web_server_proc</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[run_client.py:stop] Web Server Stopped!&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">Board</span><span class="p">()</span> <span class="k">as</span> <span class="n">board</span><span class="p">:</span>
+                <span class="n">board</span><span class="o">.</span><span class="n">led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Led</span><span class="o">.</span><span class="n">OFF</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nasa_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nasa_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[run_client.py:stop] NASA App Stopped!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">ngv</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../client.html">client package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../server.html">server package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -5,9 +5,9 @@ import sys
 from flask import Flask, render_template, Response, redirect, request, url_for, make_response
 from client.html.camera import Camera
 from client.db import database
-from client import config
+from client import config, logger
+from client.sensor import request as req
 from client.vision import register as vision_register
-from client.client import Client
 
 CURRENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 IMAGES_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'static')
@@ -17,11 +17,14 @@ if os.path.exists(IMAGES_DIR_PATH) == False:
 app = Flask(__name__)
 app._static_folder = IMAGES_DIR_PATH
 
+def is_nasa_running():
+    if req.get_gpio_pin_function() == "out":
+        return False
+    return True
+
 
 @app.route('/')
 def index():
-    if Client().is_nasa_running():
-        return render_template('index.html', patient_id='-1', error="Wait! NASA Is moving")
     new_patient_id = database.create_new_id()
     return render_template('index.html', patient_id=new_patient_id, error="")
 
@@ -29,7 +32,8 @@ def index():
 @app.route('/register/<patient_id>', methods=['GET', 'POST'])
 def register(patient_id):
     error=""
-    if Client().is_nasa_running():
+    if is_nasa_running():
+        logger.log.info("[htmp/app.py:register] NASA is running")
         return redirect(url_for('index'))
 
     if request.method =="POST":
@@ -90,8 +94,10 @@ def video_feed():
 
 @app.route('/capture/<patient_id>')
 def capture(patient_id):
-    if Client().is_nasa_running():
+    if is_nasa_running():
+        logger.log.info("[html/app.py:capture] NASA is running")
         return redirect(url_for('index'))
+
     captured_img = Camera.capture()
     file_name = '{}.jpg'.format(database.create_random_string(config.TEMP_IMAGE_FILE_NAME_LENGTH))
     if captured_img == None:

@@ -1,0 +1,7 @@
+client.logger module
+====================
+
+.. automodule:: client.logger
+   :members:
+   :undoc-members:
+   :show-inheritance:

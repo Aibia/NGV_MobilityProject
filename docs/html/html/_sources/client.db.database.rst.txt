@@ -1,0 +1,7 @@
+client.db.database module
+=========================
+
+.. automodule:: client.db.database
+   :members:
+   :undoc-members:
+   :show-inheritance:

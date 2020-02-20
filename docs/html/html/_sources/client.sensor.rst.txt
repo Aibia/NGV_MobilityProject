@@ -1,0 +1,18 @@
+client.sensor package
+=====================
+
+Submodules
+----------
+
+.. toctree::
+
+   client.sensor.request
+   client.sensor.servomotor
+
+Module contents
+---------------
+
+.. automodule:: client.sensor
+   :members:
+   :undoc-members:
+   :show-inheritance:

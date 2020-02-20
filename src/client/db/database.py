@@ -138,7 +138,7 @@ def save_medicine_info(patient_id:str, medicine_info:dict)->bool:
     """
     try:
         field_names = MEDICINE_INFO_FIELD_NAMES
-        if get_medicine_info(patient_id)['id'] == '':
+        if get_medicine_info(patient_id)['id'] != '':
             logger.log.error("[db/database.py:save_medicine_info][E] " + \
                 "patient_id({}) already exists".format(patient_id))
             return False

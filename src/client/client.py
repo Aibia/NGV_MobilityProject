@@ -11,7 +11,6 @@ from client.html.app import app
 from client import logger, config
 
 
-
 class Client:
     def __new__(self):
         if not hasattr(self, 'instance'):
@@ -43,7 +42,7 @@ class Client:
             try:
                 # 환자 얼굴 찾기
                 patient_id = recognizer.find_patient()
-                if patient_id == "":
+                if patient_id == "-1" or database.has_patient_id(patient_id) == False:
                     continue
                 logger.log.info("[run_client.py:__nasa__] Patient Found patient_id : {}".format(patient_id))
                 # 주행 멈추기 
@@ -85,20 +84,25 @@ class Client:
 
     
     def start(self):
+        if request.is_webserver_up() == False:
+            return False
+            
         web_server_flag = self.__web_server_proc.is_alive()
         nasa_flag = self.__nasa_proc.is_alive()
         if web_server_flag and nasa_flag:
             logger.log.debug("[client.py:start] Web Server And NASA Already Running")
             return False
-        elif web_server_flag:
+        if web_server_flag == False:
             self.__web_server_proc.start()
-        elif nasa_flag:
+        if nasa_flag == False:
             self.__nasa_proc.start()
         
-        if web_server_flag == False:
+        if web_server_flag:
             logger.log.debug("[client.py:start] Web Server Already Running")
-        elif nasa_flag == False:
+        elif nasa_flag:
             logger.log.debug("[client.py:start] NASA Already Running")
+        if self.__web_server_proc.is_alive() == False and self.__nasa_proc.is_alive() == False:
+            return False
         return True
 
 
@@ -113,3 +117,4 @@ class Client:
             self.__nasa_proc.terminate()
             logger.log.info("[run_client.py:stop] NASA App Stopped!")
         return True
+

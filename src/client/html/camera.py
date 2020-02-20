@@ -55,10 +55,7 @@ class Camera(object):
                                                  use_video_port=True):
 
                 stream.seek(0)
-                _stream = stream.read()
-                image = haar.draw_rectangle_on_face(Image.open(_stream))
-                cls.frame = image.tobytes()
-
+                cls.frame = stream.read()
                 stream.seek(0)
                 stream.truncate()
 

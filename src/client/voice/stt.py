@@ -7,12 +7,22 @@ from aiy.cloudspeech import CloudSpeechClient
 from aiy.board import Board
 from client import config, logger
 from client.voice import utils
+import unicodedata
 
 
 CLIENT_ID = config.CLIENT_ID
 CLIENT_SECRET = config.CLIENT_SERVER_X_NCP_APIGW_API_KEY
 LANGUAGE = config.LANGUAGE
 STT_FILE_NAME_LENGTH = config.STT_FILE_NAME_LENGTH
+
+def is_korean_chr(chr_u) :
+    """check if korean characters
+    see http://www.unicode.org/reports/tr44/#GC_Values_Table
+    """
+    category = unicodedata.category
+    if category(chr_u)[0:2] == 'Lo' : # other characters
+        if 'HANGUL' in unicodedata.name(chr_u) : return True
+    return False
 
 
 def clova_stt(client_id:str=CLIENT_ID, client_secret:str=CLIENT_SECRET, lang:str=LANGUAGE)->str:

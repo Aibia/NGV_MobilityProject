@@ -9,6 +9,12 @@ SERVER_PORT = config.SERVER_PORT
 MOTOR_STOP_PIN_NUM = config.MOTOR_STOP_PIN_NUM
 
 
+def is_webserver_up():
+    url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
+    req = requests.head(url)
+    return req.status_code == 200
+
+
 def gpio_pin_change_out()->bool:
     """모터를 제어하는 서버측 GPIO 핀을 OUT으로 바꿈 
     설정은 config파일에서 할 수 있음 [SERVER_IP_ADDR, SERVER_PORT, MOTOR_STOP_PIN_NUM]

@@ -1,0 +1,7 @@
+client.voice.stt module
+=======================
+
+.. automodule:: client.voice.stt
+   :members:
+   :undoc-members:
+   :show-inheritance:

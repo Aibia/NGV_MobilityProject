@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>client.vision.register &#8212; ngv  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for client.vision.register</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-*- coding:utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">client.db</span> <span class="kn">import</span> <span class="n">database</span>
+<span class="kn">from</span> <span class="nn">client.vision</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">client.vision.cascade</span> <span class="kn">import</span> <span class="n">haar</span>
+<span class="kn">from</span> <span class="nn">client</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">logger</span>
+
+
+<span class="n">CURRENT_DIR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">YML_DIR_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CURRENT_DIR_PATH</span><span class="p">,</span> <span class="s1">&#39;ymls&#39;</span><span class="p">)</span>
+<span class="n">TODAY</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> 
+
+
+<div class="viewcode-block" id="train_recognizer"><a class="viewcode-back" href="../../../client.vision.register.html#client.vision.register.train_recognizer">[docs]</a><span class="k">def</span> <span class="nf">train_recognizer</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">recognizer_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">YML_DIR_PATH</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.yml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">TODAY</span><span class="p">)),</span> <span class="n">old_recognizer</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;데이터를 바탕으로 얼굴 정보를 학습시킨다. </span>
+<span class="sd">    학습된 YML파일은 recognizer_path에 저장되며 OLD_RECOGNIZER에 따라 이전 파일에 추가할 수 있다.</span>
+
+<span class="sd">    :param dict datasets: 학습시킬 데이터셋</span>
+<span class="sd">    :param str recognizer_path: 학습된 YML파일을 저장할 경로</span>
+<span class="sd">    :param bool old_recognizer: 이전파일에 추가적으로 학습시킬때 사용되는 flag 이값이 참일 경우 recognizer_path는 자동으로 가장 최근의 YML파일의 경로로 바뀐다.</span>
+<span class="sd">    :returns bool:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">recognizer</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">face</span><span class="o">.</span><span class="n">LBPHFaceRecognizer_create</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">old_recognizer</span><span class="p">:</span>
+        <span class="n">OLD_RECOGNIZER_PATH</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_latest_yml_path</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">OLD_RECOGNIZER_PATH</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">OLD_RECOGNIZER_PATH</span><span class="p">):</span>
+            <span class="n">recognizer</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">OLD_RECOGNIZER_PATH</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">recognizer_path</span><span class="p">):</span>
+        <span class="n">recognizer</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">recognizer_path</span><span class="p">)</span>
+    <span class="n">recognizer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;faces&quot;</span><span class="p">],</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> 
+    <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[vision/register.py:train_recognizer] label : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;[vision/register.py:train_recognizer] recognizer_path : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">recognizer_path</span><span class="p">))</span>
+    <span class="n">recognizer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">recognizer_path</span><span class="p">)</span> 
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="train"><a class="viewcode-back" href="../../../client.vision.register.html#client.vision.register.train">[docs]</a><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">patient_id</span><span class="p">,</span> <span class="n">data_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;환자의 얼굴을 인식시키기 위해 아이디별로 이미지를 학습시킨다.</span>
+
+<span class="sd">    :param str patient_id: 학습시킬 환자의 아이디</span>
+<span class="sd">    :param str data_path: 학습시킬 환자의 이미지가 저장되어있는 경로</span>
+<span class="sd">    :returns bool:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="n">f</span><span class="p">))]</span>
+    <span class="n">faces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+        <span class="n">face</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+        <span class="n">face</span> <span class="o">=</span> <span class="n">haar</span><span class="o">.</span><span class="n">get_gray_face</span><span class="p">(</span><span class="n">face</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">face</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">face</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;[vision/register.py:train] No Face Found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)]</span> <span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">faces</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[vision/register.py:train] labels : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;faces&quot;</span> <span class="p">:</span> <span class="n">faces</span><span class="p">,</span> 
+        <span class="s2">&quot;ids&quot;</span> <span class="p">:</span> <span class="n">labels</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">train_recognizer</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">ngv</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../client.html">client package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server.html">server package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

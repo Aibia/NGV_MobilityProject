@@ -14,7 +14,7 @@ YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d') 
 
 
-def train_recognizer(datasets:dict, recognizer_path:str=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), old_recognizer:bool=True):
+def train_recognizer(datasets:dict, recognizer_path:str=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), old_recognizer:bool=False):
     """데이터를 바탕으로 얼굴 정보를 학습시킨다. 
     학습된 YML파일은 recognizer_path에 저장되며 OLD_RECOGNIZER에 따라 이전 파일에 추가할 수 있다.
 
@@ -32,6 +32,8 @@ def train_recognizer(datasets:dict, recognizer_path:str=os.path.join(YML_DIR_PAT
     elif os.path.exists(recognizer_path):
         recognizer.read(recognizer_path)
     recognizer.train(datasets["faces"], datasets["ids"]) 
+    logger.log.info("[vision/register.py:train_recognizer] label : {}".format(datasets["ids"]))
+    logger.log.debug("[vision/register.py:train_recognizer] recognizer_path : {}".format(recognizer_path))
     recognizer.write(recognizer_path) 
     return True
 
@@ -51,8 +53,10 @@ def train(patient_id:str, data_path:str)->bool:
         if face != []:
             faces.append(numpy.asarray(face, dtype=numpy.uint8))
     if len(faces) == 0:
+        logger.log.error("[vision/register.py:train] No Face Found")
         return False
     labels = numpy.asarray([int(patient_id)] *len(faces))
+    logger.log.info("[vision/register.py:train] labels : {}".format(labels))
     labels = numpy.asarray(labels)
     datasets = {
         "faces" : faces, 
