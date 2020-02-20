@@ -7,6 +7,8 @@ from server import logger, config
 
 
 class Server:
+    ## TODO
+    ## signal & terminate
     def __new__(self):
         if not hasattr(self, 'instance'):
             self.instance = super( Server, self).__new__(self)
