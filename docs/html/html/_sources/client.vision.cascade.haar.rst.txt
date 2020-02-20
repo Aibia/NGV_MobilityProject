@@ -1,7 +1,0 @@
-client.vision.cascade.haar module
-=================================
-
-.. automodule:: client.vision.cascade.haar
-   :members:
-   :undoc-members:
-   :show-inheritance:

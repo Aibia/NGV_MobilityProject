@@ -1,7 +1,0 @@
-client.voice.tts module
-=======================
-
-.. automodule:: client.voice.tts
-   :members:
-   :undoc-members:
-   :show-inheritance:

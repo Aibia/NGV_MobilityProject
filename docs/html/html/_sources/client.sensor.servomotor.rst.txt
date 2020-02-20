@@ -1,7 +1,0 @@
-client.sensor.servomotor module
-===============================
-
-.. automodule:: client.sensor.servomotor
-   :members:
-   :undoc-members:
-   :show-inheritance:

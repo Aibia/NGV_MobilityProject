@@ -1,7 +1,0 @@
-server.sensor\_server module
-============================
-
-.. automodule:: server.sensor_server
-   :members:
-   :undoc-members:
-   :show-inheritance:

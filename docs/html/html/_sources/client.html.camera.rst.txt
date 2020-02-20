@@ -1,7 +1,0 @@
-client.html.camera module
-=========================
-
-.. automodule:: client.html.camera
-   :members:
-   :undoc-members:
-   :show-inheritance:

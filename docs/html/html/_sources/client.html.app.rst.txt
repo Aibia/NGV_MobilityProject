@@ -1,7 +1,0 @@
-client.html.app module
-======================
-
-.. automodule:: client.html.app
-   :members:
-   :undoc-members:
-   :show-inheritance:

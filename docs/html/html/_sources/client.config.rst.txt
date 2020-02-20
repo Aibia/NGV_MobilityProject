@@ -1,7 +1,0 @@
-client.config module
-====================
-
-.. automodule:: client.config
-   :members:
-   :undoc-members:
-   :show-inheritance:
