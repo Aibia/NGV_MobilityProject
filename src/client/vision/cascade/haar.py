@@ -17,10 +17,10 @@ DISPLAY_COLOR_ON = config.DISPLAY_COLOR_ON
 
 
 def get_gray_face(frame:numpy.ndarray)->numpy.ndarray:
-    """
+    """그레이 스케일된 이미지에서 얼굴부분을 크롭해 반환한다.
     
-    :param numpy.ndarray frame:
-    :returns numpy.ndarray:
+    :param numpy.ndarray frame: 얼굴을 찾고자 하는 그레이스케일된 이미지 파일
+    :returns numpy.ndarray: 찾아진 얼굴 
     """
     face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
     faces = face_cascade.detectMultiScale(frame, 1.3, 5, minSize=(30, 30))
@@ -31,9 +31,9 @@ def get_gray_face(frame:numpy.ndarray)->numpy.ndarray:
 
 
 def find_face()->numpy.ndarray:
-    """환자 얼굴을 찾아서 반환함
+    """실시간으로 얼굴을 찾아서 반환함
 
-    :returns numpy.ndarray:
+    :returns numpy.ndarray: 찾아진 그레이 스케일 된 얼굴 이미지 데이터
     """
     try:
         img = []

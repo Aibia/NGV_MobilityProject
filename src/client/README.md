@@ -10,3 +10,11 @@ json-rpc 기준의 클라이언트
 
 실행을 완료하면 다시 주행 시키기 위해 핀 17의 값을 IN으로 변경한다.  
 
+
+```
+#-*- coding:utf-8 -*-
+from client.client import Client
+
+client = Client()
+client.start()
+```

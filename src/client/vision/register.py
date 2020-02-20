@@ -14,15 +14,14 @@ YML_DIR_PATH = os.path.join(CURRENT_DIR_PATH, 'ymls')
 TODAY = datetime.now().strftime('%Y-%m-%d') 
 
 
-def train_recognizer(datasets:dict, recognizer_path:str=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), old_recognizer:bool=False):
+def train_recognizer(datasets:dict, recognizer_path:str=os.path.join(YML_DIR_PATH, '{}.yml'.format(TODAY)), old_recognizer:bool=False)->bool:
     """데이터를 바탕으로 얼굴 정보를 학습시킨다. 
     학습된 YML파일은 recognizer_path에 저장되며 OLD_RECOGNIZER에 따라 이전 파일에 추가할 수 있다.
 
     :param dict datasets: 학습시킬 데이터셋
     :param str recognizer_path: 학습된 YML파일을 저장할 경로
-    :param bool old_recognizer: 이전파일에 추가적으로 학습시킬때 사용되는 flag 
-    이값이 참일 경우 recognizer_path는 자동으로 가장 최근의 YML파일의 경로로 바뀐다.
-    :returns bool:
+    :param bool old_recognizer: 이전파일에 추가적으로 학습시킬때 사용되는 flag이값이 참일 경우 recognizer_path는 자동으로 가장 최근의 YML파일의 경로로 바뀐다.
+    :returns bool: 얼굴 데이터와 라벨을 이용하여 이미지를 학습시킨 결과 
     """
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     if old_recognizer:
@@ -43,7 +42,7 @@ def train(patient_id:str, data_path:str)->bool:
 
     :param str patient_id: 학습시킬 환자의 아이디
     :param str data_path: 학습시킬 환자의 이미지가 저장되어있는 경로
-    :returns bool:
+    :returns bool: 주어진 데이터에서 찾아진 얼굴 데이터와 라벨값을 이용하여 train_recognizer함수를 통해 학습시킨 결과 값
     """
     images = [os.path.join(data_path, f) for f in os.listdir(data_path) if os.path.isfile(os.path.join(data_path,f))]
     faces = []

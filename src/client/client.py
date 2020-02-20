@@ -76,17 +76,30 @@ class Client:
                 logger.log.error("[run_client.py:__nasa__][E] {}".format(e))
 
 
-    def is_web_running(self):
+    def is_web_running(self)->bool:
+        """웹서버가 작동중인지의 여부를 확인할 수 있는 함수 
+
+        :returns bool: 웹 서버가 작동중일 경우 True를 반환한다.
+        """
         return self.__web_server_proc.is_alive()
 
     
-    def is_nasa_running(self):
+    def is_nasa_running(self)->bool:
+        """차량이 작동중인지의 여부를 확인할 수 있는 함수 
+        서버에 리퀘스트를 보내 정해진 gpio값의 상태가 "out"인 경우 차량이 움직이고 있다고 판단한다.
+
+        :returns bool: 차량이 작동중일 경우 True를 반환한다.
+        """
         if request.get_gpio_pin_function() == "out":
             return False
         return True
 
     
-    def start(self):
+    def start(self)->bool:
+        """(main함수)웹서버와 얼굴인식 및 서보를 동작시킨다. 
+
+        :returns bool: 실행 결과 
+        """
         current_time = time.time()
         web_flag = False
         while time.time() - current_time < config.CONNECTION_TIME_OUT:

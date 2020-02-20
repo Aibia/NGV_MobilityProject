@@ -58,7 +58,8 @@ def application(request):
 def run_sensor_server():
     logger.log.info("[sensor_server.py:run_sensor_server] Start server {}:{} ...".format(config.SERVER_IP_ADDR, config.SERVER_PORT))
     run_simple(config.SERVER_IP_ADDR, config.SERVER_PORT, application)
-
+    return True
 
 def stop_sensor_server():
     logger.log.info("[sensor_server.py:run_sensor_server] Stop server {}:{} ...".format(config.SERVER_IP_ADDR, config.SERVER_PORT))
+    return True

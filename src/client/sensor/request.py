@@ -9,7 +9,11 @@ SERVER_PORT = config.SERVER_PORT
 MOTOR_STOP_PIN_NUM = config.MOTOR_STOP_PIN_NUM
 
 
-def is_webserver_up():
+def is_webserver_up()->bool:
+    """jsonrpc 서버와의 연결을 확인하는 함수
+
+    :returns bool: 서버와 연결이 되어있으면 True 아님 False를 반환한다.
+    """
     url = "http://"+SERVER_IP_ADDR+":"+str(SERVER_PORT)+"/jsonrpc"
     req = requests.head(url)
     return req.status_code == 200
