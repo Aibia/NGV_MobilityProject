@@ -30,21 +30,8 @@ def get_gray_face(frame:numpy.ndarray)->numpy.ndarray:
     return numpy.ndarray([])
 
 
-def draw_rectangle_on_face(image):
-    """
-    
-    :param numpy.ndarray image:
-    """
-    face_cascade = cv2.CascadeClassifier(FACE_CASCADE_XML_PATH)
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5, minSize=(30, 30))
-    for (x, y, w, h) in faces:
-        cv2.rectangle(gray, (x,y), (x+w,y+h), (255,0,0), 2)
-    return cv2.cvtColor(gray, cv2.COLOR_BGR2RGB)
-
-
 def find_face()->numpy.ndarray:
-    """환자 얼굴을 찾아서 
+    """환자 얼굴을 찾아서 반환함
 
     :returns numpy.ndarray:
     """

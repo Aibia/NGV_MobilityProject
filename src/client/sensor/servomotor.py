@@ -10,6 +10,7 @@ SERVO_MAX_ANGLE = config.SERVO_MAX_ANGLE
 MIN_PULSE_WIDTH = config.MIN_PULSE_WIDTH
 MAX_PULSE_WIDTH = config.MAX_PULSE_WIDTH
 
+
 def medicine_out(medicine_info:dict)->bool:
     """약 정보(medicine_info)에 맞는 약을 배출 
     

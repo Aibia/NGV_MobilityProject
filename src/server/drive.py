@@ -22,10 +22,11 @@ SERVO_RIGHT = config.SERVO_RIGHT
 __SERVO_LEFT = config.__SERVO_LEFT
 __SERVO_MID = config.__SERVO_MID
 __SERVO_RIGHT = config.__SERVO_RIGHT
+
 MOTOR_STOP = config.MOTOR_STOP
 MOTOR_FORWARD = config.MOTOR_FORWARD
-FIRST_FORWARD = config.FIRST_FORWARD
-FIRST_MOTOR_FORWARD = config.FIRST_MOTOR_FORWARD
+MOTOR_FORWARD_FASTER = config.MOTOR_FORWARD_FASTER
+
 ## DISPLAY CONFIG
 DISPLAY_ON = config.DISPLAY_ON
 
@@ -37,8 +38,8 @@ def detect_edges(frame):
     영상을 흑백 이진화 처리한 후 bilateral filter를 이용하여 노이즈를 제거한다.
     Canny Algorithm을 이용해 edge를 찾는다.
 
-    :param frame: 웹캠으로 입력받은 edge를 찾을 영상
-    :returns edges: 영상의 edge
+    :param numpy.ndarray frame: 웹캠으로 입력받은 edge를 찾을 영상
+    :returns numpy.ndarray edges: 영상의 edge
     '''
     gray = cv2.cvtColor(frame, 6)
     mask = cv2.bilateralFilter(gray, 3, 15, 15, 4)
@@ -59,10 +60,10 @@ def region_of_interest(edges):
 
     # only focus lower half of the screen
     polygon = np.array([[
-        (0, height),
-        (0, height / 2),
-        (width, height / 2),
-        (width, height),
+        (width / 5, height),
+        (width / 5, height / 2),
+        (4 * width / 5, height / 2),
+        (4 * width / 5, height),
     ]], np.int32)
 
     cv2.fillPoly(mask, polygon, 255)
@@ -252,14 +253,20 @@ def get_steering_angle(frame, lane_lines):
 
     return steering_angle, num_lane
 
+
 def stop_forwarding(sig, frame):
     pwm.set_pwm(MOTOR_PIN_NUM, 0 ,MOTOR_STOP)
-    logger.log.info('Stopped!')
+    logger.log.info('[drive.py:stop_forwarding] Stopped!')
     sys.exit(0)
 
 signal.signal(signal.SIGINT, stop_forwarding)
 
+
 def run():
+    MOTOR_STOP_FLAG = True
+    if GPIO.gpio_function(MOTOR_STOP_PIN_NUM) == GPIO.OUT:
+        MOTOR_STOP_FLAG = True
+
     before_angle = __SERVO_MID
     video = cv2.VideoCapture(0)
     video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
@@ -270,8 +277,9 @@ def run():
     pwm.set_pwm_freq(60)
     while True:
         while GPIO.gpio_function(MOTOR_STOP_PIN_NUM) == GPIO.OUT:
+            MOTOR_STOP_FLAG = True
             pwm.set_pwm(MOTOR_PIN_NUM, 0, MOTOR_STOP)
-            logger.log.info("Stopped !")
+            logger.log.info("[drive.py:run] Stopped GPIO Pin {} is GPIO.OUT!".format(MOTOR_STOP_PIN_NUM))
             time.sleep(1)
         _, frame = video.read()
 
@@ -293,35 +301,44 @@ def run():
         '''
         deviation = abs(steering_angle - before_angle)
 
-        if deviation < 4:
-            steering_angle = int((steering_angle + before_angle) / 2)
-        elif deviation > 60:
+        if deviation > 60:
             steering_angle = before_angle
 
         if num_lane == 0:
             steering_angle = before_angle
 
         before_angle = steering_angle
-        logger.log.info("before_angle : {} steering_angle : {}".format(before_angle, steering_angle))
-        pwm.set_pwm(MOTOR_PIN_NUM, 0, MOTOR_FORWARD)
+        logger.log.info("[drive.py:run] before_angle : {} steering_angle : {}".format(before_angle, steering_angle))
+        
+        ## TODO 
+        ## 여기가 위치가 맞는지.. 왜냐면 먼저 출발하고 스티어링을 하는게 맞는지
+        ## 맞다면
+        ## 
+        if MOTOR_STOP_FLAG:
+            ## 멈춰 있다 출발했을 경우 좀더 빠르게 출발 
+            MOTOR_STOP_FLAG = False
+            pwm.set_pwm(MOTOR_PIN_NUM, 0, MOTOR_FORWARD_FASTER)
+        else:
+            pwm.set_pwm(MOTOR_PIN_NUM, 0, MOTOR_FORWARD)
+        
         if steering_angle > __SERVO_RIGHT:
             steering_angle = __SERVO_RIGHT
         if steering_angle < __SERVO_LEFT:
             steering_angle = __SERVO_LEFT
-        
+
         '''
         * straight : 양 끝 값(100 / 80)에 가중치를 많이 두고 steering
         * right / left : 앞 부분에(100 - 115 / 65 - 80) 가중치를 많이 두고 steering
     
         * servo_pwm : 실제 차량을 제어하는 pwm값
         '''
-        
-        if steering_angle <= 100 and steering_angle >= 80:  #straight
-            servo_pwm = steering_angle + 280
-        elif steering_angle > 100:  #right
-            servo_pwm = -0.0214 * steering_angle * 2 - 7.75 * steering_angle - 195
+
+        if steering_angle <= 96 and steering_angle >= 80:  #straight
+            servo_pwm = 0.1372 * steering_angle ** 2 - 21.673 * steering_angle + 1210.6
+        elif steering_angle > 96:  #right
+            servo_pwm = -0.024 * steering_angle ** 2 + 7.769 * steering_angle - 136.82
         else: #left
-            servo_pwm = 0.0583 * steering_angle ** 2 - 4.1488 * steering_angle + 342.41
+            servo_pwm = 0.0334 * steering_angle ** 2 - 1.8034 * steering_angle + 287.71
 
         pwm.set_pwm(SERVO_PIN_NUM, 0, int(servo_pwm))
         key = cv2.waitKey(1)
@@ -329,3 +346,5 @@ def run():
             break
     video.release()
     cv2.destroyAllWindows()
+
+    

@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*-
 import os
 import time
+import signal
 from multiprocessing import Process
 from aiy.board import Board, Led
 from client.db import database
@@ -21,6 +22,7 @@ class Client:
     def __init__(self):
         self.__web_server_proc = Process(target=(self.__webserver__))
         self.__nasa_proc = Process(target=self.__nasa__)
+        signal.signal(signal.SIGINT, self.stop)
 
 
     def __webserver__(self):
@@ -44,6 +46,7 @@ class Client:
                 patient_id = recognizer.find_patient()
                 if patient_id == "-1" or database.has_patient_id(patient_id) == False:
                     continue
+
                 logger.log.info("[run_client.py:__nasa__] Patient Found patient_id : {}".format(patient_id))
                 # 주행 멈추기 
                 logger.log.info("[run_client.py:__nasa__] Stop running ...")
@@ -63,7 +66,7 @@ class Client:
                     continue
                 if config.CLOUD_TTS_ON:
                     tts.clova_tts("안녕하세요 {}님".format(patient_info["name"]))
-                else:
+                elif config.TTS_ON:
                     tts.say("안녕하세요 {}님".format(patient_info["name"]))
                 # 약 배출 
                 servomotor.medicine_out(medicine_info)
@@ -84,9 +87,17 @@ class Client:
 
     
     def start(self):
-        if request.is_webserver_up() == False:
+        current_time = time.time()
+        web_flag = False
+        while time.time() - current_time < config.CONNECTION_TIME_OUT:
+            web_flag = request.is_webserver_up()
+            if web_flag:
+                break
+
+        if web_flag == False:
+            logger.log.error("[client.py:start] Server is not connected")
             return False
-            
+
         web_server_flag = self.__web_server_proc.is_alive()
         nasa_flag = self.__nasa_proc.is_alive()
         if web_server_flag and nasa_flag:

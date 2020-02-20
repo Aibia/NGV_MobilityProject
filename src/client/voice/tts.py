@@ -40,6 +40,8 @@ def clova_tts(text:str, client_id:str=CLIENT_ID, client_secret:str=CLIENT_SECRET
     :param str lang: 사용할 언어 ( Kor, Jpn, Eng, Chn ) (default값은 config에 저장 가능)
     :returns: bool타입의 함수 실행 결과
     """
+    ## TODO 
+    ## Codec Problem 
     try:
         url = "https://naveropenapi.apigw.ntruss.com/voice/v1/tts"
         encText = urllib.parse.quote(text)

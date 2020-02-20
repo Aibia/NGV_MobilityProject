@@ -96,12 +96,12 @@ def video_feed():
 def capture(patient_id):
     if is_nasa_running():
         logger.log.info("[html/app.py:capture] NASA is running")
-        return redirect(url_for('index'))
+        return ""
 
     captured_img = Camera.capture()
     file_name = '{}.jpg'.format(database.create_random_string(config.TEMP_IMAGE_FILE_NAME_LENGTH))
     if captured_img == None:
-        return 'fail'
+        return ""
 
     PATIENT_IMAGE_DIR_PATH = os.path.join(IMAGES_DIR_PATH, patient_id)
     if os.path.exists(PATIENT_IMAGE_DIR_PATH) == False:

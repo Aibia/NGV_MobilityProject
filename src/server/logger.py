@@ -28,19 +28,39 @@ class Logger:
     
 
     def info(self, text):
+        """기본 로깅 함수
+
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.info(text)
 
 
     def warning(self, text):
+        """경고하기 위한 로깅
+        
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.warning(text)
 
 
     def debug(self, text):
+        """디버깅을 위한 로깅
+        
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.debug(text)
 
 
     def error(self, text):
+        """에러를 로깅
+        
+        :param str text: 로깅할 문자
+        :returns: 파일에 로깅
+        """
         return self.__logger.error(text)
-
+    
 
 log = Logger()

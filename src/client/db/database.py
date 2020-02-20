@@ -171,7 +171,6 @@ def delete_patient_info(patient_id:str)->bool:
                     patient_infos.append(row)
         with open(PATIENT_INFO_CSV_PATH, "w") as fd_out:
             csv_dict_writer = csv.DictWriter(fd_out, fieldnames=field_names)
-            csv_dict_writer.writeheader()
             csv_dict_writer.writerows(patient_infos)
         return True
     except Exception as e:
@@ -199,7 +198,6 @@ def delete_medicine_info(patient_id:str)->bool:
                     medicine_infos.append(row)
         with open(MEDICINE_INFO_CSV_PATH, 'w') as fd_out:
             csv_dict_writer = csv.DictWriter(fd_out, fieldnames=field_names)
-            csv_dict_writer.writeheader()
             csv_dict_writer.writerows(medicine_infos)
         return True
     except Exception as e:

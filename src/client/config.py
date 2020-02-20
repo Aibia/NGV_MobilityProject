@@ -14,6 +14,7 @@ HTML_DIR_PATH = os.path.join(ROOT_DIR_PATH, 'html')
 SERVER_IP_ADDR = '192.168.0.10'
 SERVER_PORT = 4000
 MOTOR_STOP_PIN_NUM = 15
+CONNECTION_TIME_OUT = 10
 
 ## HTML CONFIG
 APP_PATH = os.path.join(HTML_DIR_PATH, 'app.py')
@@ -37,8 +38,9 @@ DISPLAY_ON = False
 DISPLAY_COLOR_ON = False
 
 ## VOICE CONFIG
-CLOUD_TTS_ON = False
+CLOUD_TTS_ON = True
 CLOUD_STT_ON = False
+TTS_ON = False
 LANGUAGE = "Kor" ## 언어 코드 ( Kor, Jpn, Eng, Chn )
 APPLICATION_NAME = "ngv"
 CLIENT_ID = "7q1xxkbepv"

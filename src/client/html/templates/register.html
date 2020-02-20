@@ -40,10 +40,10 @@
 		$( 'button#capture' ).click(function() {
 			$.get( '/capture/{{patient_id}}')
 			.done(function( data ) {
-				if (data != 'fail') {
+				if (data != "") {
 					$('div#captures').append('<img src="'+data+'">');
 				}else {
-					alert("Fail ");
+					alert("[E] Fail to capture !");
 				}
 
 			});
