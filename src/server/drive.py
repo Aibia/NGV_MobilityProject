@@ -310,10 +310,6 @@ def run():
         before_angle = steering_angle
         logger.log.info("[drive.py:run] before_angle : {} steering_angle : {}".format(before_angle, steering_angle))
         
-        ## TODO 
-        ## 여기가 위치가 맞는지.. 왜냐면 먼저 출발하고 스티어링을 하는게 맞는지
-        ## 맞다면
-        ## 
         if MOTOR_STOP_FLAG:
             ## 멈춰 있다 출발했을 경우 좀더 빠르게 출발 
             MOTOR_STOP_FLAG = False
