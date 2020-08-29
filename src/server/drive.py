@@ -242,8 +242,6 @@ while True:
 
     pwm.set_pwm(motor_pin, 0, motor_forward)
 
-    #servo_pwm = 2 * steering_angle + 190    #1차 -> 40-140 / 270, 370
-    #servo_pwm = 2.1143 * steering_angle + 172.53 #1차 -> 36-140 / 250, 360
     #servo_pwm = 0.0000000000000002 * steering_angle ** 2 + 2*steering_angle + 190 #2차 -> 40-140 / 270, 370
     servo_pwm = 0.0016 * steering_angle ** 2 + 1.8396*steering_angle + 181.74   #2차 -> 36-140 / 250, 360
 
